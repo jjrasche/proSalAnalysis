@@ -10,16 +10,23 @@ declare let google: any;
 export class AppComponent implements OnInit {
   lineChartData: Object;
   formGroup: FormGroup;
-  private stepSize = 500;
-  private xAxis: Domain = {min:300000, max:700000};
+  private stepSize = 200;
+  private calculatedDomain: Domain = { min: this.stepSize, max: 2000000 };
+  private xAxis: Domain = {min:50000, max:700000};
+  lossPoint: number;
+  gainPoint: number;
+  desiredBasePay: number;
 
   constructor(public fb: FormBuilder) {
+    this.desiredBasePay = 78000;
   }
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({
       "basePay": 78000,
-      "percentProduction": .185
+      "percentProduction": 18.5,
+      "staticCosts": 5700,
+      "payAdjustedCostPercent": 8.38
     });
 
     google.charts.load('current', { 'packages': ['corechart'] });
@@ -37,12 +44,18 @@ export class AppComponent implements OnInit {
     dataTable.addColumn('number', 'Production');
     dataTable.addColumn('number', 'Cost/Production');
     // A column for custom tooltip content
-    dataTable.addColumn({ type: 'string', role: 'tooltip' });
+    dataTable.addColumn({ type: 'string', role: 'tooltip', 'p': { 'html': true } });
     dataTable.addRows(this.googleCreateProductionData());
 
     var options = {
       tooltip: { isHtml: true },
-      legend: 'none'
+      legend: 'none',
+      explorer: {
+        actions: ['dragToZoom', 'rightClickToReset'],
+        axis: 'horizontal',
+        keepInBounds: true,
+        maxZoomIn: 4.0
+      }
     };
     var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
     chart.draw(dataTable, options);
@@ -58,8 +71,8 @@ export class AppComponent implements OnInit {
 
   createProductionData(): Array<Array<number>> {
     let data = new Array<Array<number>>();
-    let xVal = this.xAxis.min;
-    while (xVal <= this.xAxis.max) {
+    let xVal = this.calculatedDomain.min;
+    while (xVal <= this.calculatedDomain.max) {
       let proSalData = this.proSalFunction(xVal);
       data.push([xVal, proSalData.costToProduction, proSalData.totalPay, proSalData.totalCost]);
       xVal += this.stepSize;
@@ -68,54 +81,57 @@ export class AppComponent implements OnInit {
   }
 
   googleCreateProductionData(): Array<Array<any>> {
-    let data = new Array<Array<any>>();
-    let xVal = this.xAxis.min;
-    while (xVal <= this.xAxis.max) {
-      let proSalData = this.proSalFunction(xVal);
-      data.push([proSalData.production, proSalData.costToProduction, this.createToolTipString(proSalData)]);
+    let proSalData = new Array<ProSalData>();
+    let xVal = this.calculatedDomain.min;
+    while (xVal <= this.calculatedDomain.max) {
+      proSalData.push(this.proSalFunction(xVal));
       xVal += this.stepSize;
     }
-    console.log(JSON.stringify(data));
-    return data;
+
+    // set gain and loss points
+    let lossDataPoint = proSalData.find((psd: ProSalData) => psd.costToProduction < 25);
+    this.lossPoint = lossDataPoint == null ? null : lossDataPoint.production;
+    let gainDataPoint = proSalData.find((psd: ProSalData) => psd.totalPay > this.desiredBasePay);
+    let gainDataPoint2 = this.closest(proSalData, "totalPay", this.desiredBasePay);
+    this.gainPoint = gainDataPoint2 == null ? null : gainDataPoint2.production;
+
+    console.log(proSalData.length);
+    let ret = new Array<Array<any>>();
+    proSalData
+      .filter((psd: ProSalData) => this.xAxis.min < psd.production && psd.production < this.xAxis.max)
+      .forEach((psd: ProSalData) => {
+        ret.push([psd.production, psd.costToProduction, this.createToolTipString(psd)]);
+      });
+
+    return ret;
+  }
+
+  closest(array: Array<any>, key: string, goal: number) {
+    return array.reduce(function (prev, curr) {
+      return (Math.abs(curr[key] - goal) < Math.abs(prev[key] - goal) ? curr : prev);
+    });
   }
 
   createToolTipString(data: ProSalData): string {
-    return `Production: ${data.production.toString()}\nCost: ${data.totalCost.toString()}\nPay: ${data.totalPay.toString()}\nCost/Production: ${data.costToProduction.toString()}`;
-  }
-
-  initChart() {
-    google.charts.load('current', { 'packages': ['corechart'] });
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-      var dataTable = new google.visualization.DataTable();
-      dataTable.addColumn('number', 'Production');
-      dataTable.addColumn('number', 'Cost/Production');
-      // A column for custom tooltip content
-      dataTable.addColumn({ type: 'string', role: 'tooltip' });
-      dataTable.addRows(this.googleCreateProductionData());
-
-      var options = {
-        tooltip: { isHtml: true },
-        legend: 'none'
-      };
-      var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
-      chart.draw(dataTable, options);
-    }
+    return `<span>
+        <span>Production: ${data.production.toString()}</span></br>
+        <span>Cost: ${data.totalCost.toString()}</span></br>
+        <span><b>Pay: ${data.totalPay.toString()}</b></span></br>
+        <span>Cost/Production: ${data.costToProduction.toString()}</span>
+      </span>`;
   }
 
   proSalFunction(production: number): ProSalData {
     let basePay = this.formGroup.get("basePay").value;
-    let percentProduction = this.formGroup.get("percentProduction").value;
+    let percentProduction = this.toPercent(this.formGroup.get("percentProduction").value);
+    let staticCosts = this.formGroup.get("staticCosts").value;
+    let payAdjustedCostPercent = this.toPercent(this.formGroup.get("payAdjustedCostPercent").value);
 
     let productionPay = production * percentProduction;
     let additionalProductionPay =
       productionPay - basePay > 0 ?
         productionPay - basePay : 0;
     let totalPay = basePay + additionalProductionPay;
-
-    let staticCosts = 5700;
-    let payAdjustedCostPercent = .0838;
 
     let totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
     let costToProduction = totalCost / production;
@@ -124,12 +140,20 @@ export class AppComponent implements OnInit {
       production: this.trunc(production),
       totalPay: this.trunc(totalPay),
       totalCost: this.trunc(totalCost),
-      costToProduction: this.trunc(costToProduction, 4)
+      costToProduction: this.trunc(this.fromPercent(costToProduction))
     };
   }
 
-  trunc(input: number, precision: number = 3): number {
+  trunc(input: number, precision: number = 2): number {
     return parseFloat(input.toFixed(precision));
+  }
+
+  toPercent(input: number): number {
+    return input/100;
+  }
+
+  fromPercent(input: number): number {
+    return input * 100;
   }
 
   onEnter(event: KeyboardEvent) {
@@ -137,7 +161,6 @@ export class AppComponent implements OnInit {
       this.drawChart();
     }
   }
-
 }
 
 class Domain {

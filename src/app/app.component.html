@@ -1,17 +1,43 @@
+<div fxLayout.gt-sm="row" fxLayout="row" fxLayoutAlign="left stretch">
   <div fxLayout="column" fxFlex="100">
     <div id="chart_div"></div>
   </div>
-
+</div>
 <form fxLayout.gt-sm="row" fxLayout="row" fxLayoutAlign="space-between stretch" [formGroup]="formGroup" (keydown)="onEnter($event)">
-  <div fxLayout="column" fxFlex="100">
+  <div fxLayout="column" fxFlex="40">
     <mat-form-field>
       <mat-label><b>Base Pay</b></mat-label>
       <input id="basePay" type="number" (blur)="drawChart()" matInput formControlName="basePay">
     </mat-form-field>
     <mat-form-field>
       <mat-label><b>Percent Production</b></mat-label>
-      <input id="percentProduction" type="number" (blur)="drawChart()" matInput formControlName="percentProduction">
+      <input id="percentProduction" type="number" min="0" max="100" (blur)="drawChart()" matInput formControlName="percentProduction">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label><b>Static Employee Costs</b></mat-label>
+      <input id="staticCosts" type="number" min="0" max="1" (blur)="drawChart()" matInput formControlName="staticCosts">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label><b>Pay Based Cost Percentage</b></mat-label>
+      <input id="payAdjustedCostPercent" type="number" min="0" max="100" step="0.1" (blur)="drawChart()" matInput formControlName="payAdjustedCostPercent">
     </mat-form-field>
   </div>
+  <div fxLayout="column" fxFlex="40">
+    <div fxLayout="row" fxLayoutAlign="space-between stretch" >
+      <mat-form-field fxLayout="column" fxFlex="48">
+        <mat-label><b>25% loss point</b></mat-label>
+        <input id="lossPoint" readonly matInput [value]="lossPoint">
+      </mat-form-field>
+      <div fxLayout="column" fxFlex="48">
+        <mat-form-field>
+          <mat-label><b>production gain point</b></mat-label>
+          <input id="gainPoint" readonly matInput [value]="gainPoint">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label><b>Desired Base Pay</b></mat-label>
+          <input id="desiredBasePay" matInput [(value)]="desiredBasePay" (blur)="drawChart()">
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
 </form>
-

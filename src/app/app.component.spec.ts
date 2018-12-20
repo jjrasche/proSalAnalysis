@@ -2,30 +2,21 @@ import { TestBed, async } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+  let app: AppComponent;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
         AppComponent
       ],
     }).compileComponents();
+
+    const fixture = TestBed.createComponent(AppComponent);
+    this.app = fixture.debugElement.componentInstance;
   }));
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it(`should have as title 'proSalAnalysis'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('proSalAnalysis');
-  });
-
   it('should render title in a h1 tag', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to proSalAnalysis!');
+    const data = [{test: 5}, {test: 3}, {test: 7}];
+    let result = app.closest(data, "test", 3)
+    expect(result).toEqual({test:3});
   });
 });
