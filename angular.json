@@ -27,7 +27,7 @@
             ],
             "scripts": [],
             "baseHref": "./",
-            "deployUrl": "/"
+            "deployUrl": "./"
           },
           "configurations": {
             "production": {
