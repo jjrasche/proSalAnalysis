@@ -1,0 +1,17 @@
+  <div fxLayout="column" fxFlex="100">
+    <div id="chart_div"></div>
+  </div>
+
+<form fxLayout.gt-sm="row" fxLayout="row" fxLayoutAlign="space-between stretch" [formGroup]="formGroup" (keydown)="onEnter($event)">
+  <div fxLayout="column" fxFlex="100">
+    <mat-form-field>
+      <mat-label><b>Base Pay</b></mat-label>
+      <input id="basePay" type="number" (blur)="drawChart()" matInput formControlName="basePay">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label><b>Percent Production</b></mat-label>
+      <input id="percentProduction" type="number" (blur)="drawChart()" matInput formControlName="percentProduction">
+    </mat-form-field>
+  </div>
+</form>
+
