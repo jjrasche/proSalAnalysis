@@ -35,7 +35,7 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label><b>Desired Base Pay</b></mat-label>
-          <input id="desiredBasePay" matInput [(value)]="desiredBasePay" (blur)="drawChart()">
+          <input id="desiredBasePay" matInput [(ngModel)]="desiredBasePay" [ngModelOptions]="{standalone: true}" (blur)="drawChart()">
         </mat-form-field>
       </div>
     </div>

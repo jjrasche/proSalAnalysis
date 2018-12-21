@@ -4,7 +4,7 @@ import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { AppComponent } from './app.component';
+import { AppComponent } from './components/app.component';
 import { MaterialModule } from './material/material.module';
 
 @NgModule({
