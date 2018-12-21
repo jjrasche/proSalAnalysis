@@ -29,10 +29,16 @@
   </div>
   <div fxLayout="column" fxFlex="40">
     <div fxLayout="row" fxLayoutAlign="space-between stretch" >
-      <mat-form-field fxLayout="column" fxFlex="48">
-        <mat-label><b>25% loss point</b></mat-label>
-        <input id="lossPoint" readonly matInput [value]="lossPoint">
-      </mat-form-field>
+      <div fxLayout="column" fxFlex="48">
+        <mat-form-field fxLayout="column" fxFlex="48">
+          <mat-label><b>25% loss point</b></mat-label>
+          <input id="lossPoint" readonly matInput [value]="lossPoint">
+        </mat-form-field>
+        <section class="mat-typography">
+          <h4>Stop Loss</h4>
+          <mat-checkbox id="stopLoss" (change)="drawChart('checkbox')" [(ngModel)]="stopLoss" [ngModelOptions]="{standalone: true}"> </mat-checkbox>
+        </section>
+      </div>
       <div fxLayout="column" fxFlex="48">
         <mat-form-field>
           <mat-label><b>production gain point</b></mat-label>

@@ -9,20 +9,21 @@ declare let google: any;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
   lineChartData: Object;
   formGroup: FormGroup;
   updatingChart: boolean = false;
   private stepSize = 500;
-  private calculatedDomain: Domain = { min: this.stepSize, max: 2000000 };
+  private calculatedDomain: Domain = { min: 120000, max: 2000000 };
   private xAxis: Domain = {min:120000, max:720000};
   lossPoint: number;
   gainPoint: number;
   desiredSalary: number = 85000;
   debouncedInput: KeyboardEvent;
-
-  status: boolean = false;
+  stopLoss: boolean = false
+  costToProductionLossPercent: number = .25;
 
   constructor(public fb: FormBuilder,
               public chartService: ChartService) {
@@ -112,10 +113,26 @@ export class AppComponent implements OnInit {
     let additionalProductionPay =
       productionPay - basePay > 0 ?
         productionPay - basePay : 0;
-    let totalPay = basePay + additionalProductionPay;
 
-    let totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
-    let costToProduction = totalCost / production;
+    let totalPay: number = 0
+    let totalCost: number = 0;
+    let costToProduction: number = 0;
+    if (this.stopLoss) {
+      totalPay = basePay + additionalProductionPay;
+      totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
+      costToProduction = totalCost / production;
+
+      // determine totalPay based on costToProductionLossPercent
+      if (costToProduction > this.costToProductionLossPercent) {
+        totalPay = (this.costToProductionLossPercent * production - staticCosts)/(payAdjustedCostPercent + 1);
+        totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
+        costToProduction = totalCost / production;
+      }
+    } else {
+      totalPay = basePay + additionalProductionPay;
+      totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
+      costToProduction = totalCost / production;
+    }
 
     return {
       production: this.chartService.trunc(production),

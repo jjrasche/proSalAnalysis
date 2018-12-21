@@ -13,7 +13,7 @@ export class ChartService {
     //   return "gold";
     // } else 
     let opacity = proSalData.totalPay <= desiredSalary ? .15 : 1;
-    if (proSalData.costToProduction >= 25) {
+    if (proSalData.costToProduction > 25) {
       return `color: red; opacity: ${opacity};`
     } else if (proSalData.costToProduction > 24) {
       return `color: yellow; opacity: ${opacity};`
