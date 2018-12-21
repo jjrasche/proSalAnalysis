@@ -79,6 +79,17 @@ var AppModule = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/components/app.component.css":
+/*!**********************************************!*\
+  !*** ./src/app/components/app.component.css ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = ".mat-form-field--no-underline .mat-input-underline {\n  background-color: transparent;\n}\n\nh4 {\n  margin: 0 0 0px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50cy9hcHAuY29tcG9uZW50LmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLDhCQUE4QjtDQUMvQjs7QUFFRDtFQUNFLGdCQUFnQjtDQUNqQiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudHMvYXBwLmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIubWF0LWZvcm0tZmllbGQtLW5vLXVuZGVybGluZSAubWF0LWlucHV0LXVuZGVybGluZSB7XG4gIGJhY2tncm91bmQtY29sb3I6IHRyYW5zcGFyZW50O1xufVxuXG5oNCB7XG4gIG1hcmdpbjogMCAwIDBweDtcbn0iXX0= */"
+
+/***/ }),
+
 /***/ "./src/app/components/app.component.html":
 /*!***********************************************!*\
   !*** ./src/app/components/app.component.html ***!
@@ -86,7 +97,7 @@ var AppModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div [hidden]=\"updatingChart\" fxLayout.gt-sm=\"row\" fxLayout=\"row\" fxLayoutAlign=\"left stretch\">\n  <div fxLayout=\"column\" fxFlex=\"100\">\n    <div id=\"chart_div\"></div>\n  </div>\n</div>\n\n<div [hidden]=\"!updatingChart\">\n  <app-spinner></app-spinner>\n</div>\n\n<form fxLayout.gt-sm=\"row\" fxLayout=\"row\" fxLayoutAlign=\"space-between stretch\" [formGroup]=\"formGroup\" (keypress)=\"onEnter($event)\">\n  <div fxLayout=\"column\" fxFlex=\"40\">\n    <mat-form-field>\n      <mat-label><b>Base Pay</b></mat-label>\n      <input id=\"basePay\" type=\"number\" matInput formControlName=\"basePay\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Percent Production</b></mat-label>\n      <input id=\"percentProduction\" type=\"number\" min=\"0\" max=\"100\" matInput formControlName=\"percentProduction\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Static Employee Costs</b></mat-label>\n      <input id=\"staticCosts\" type=\"number\" min=\"0\" max=\"1\" matInput formControlName=\"staticCosts\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Pay Based Cost Percentage</b></mat-label>\n      <input id=\"payAdjustedCostPercent\" type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" matInput formControlName=\"payAdjustedCostPercent\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n  </div>\n  <div fxLayout=\"column\" fxFlex=\"40\">\n    <div fxLayout=\"row\" fxLayoutAlign=\"space-between stretch\" >\n      <mat-form-field fxLayout=\"column\" fxFlex=\"48\">\n        <mat-label><b>25% loss point</b></mat-label>\n        <input id=\"lossPoint\" readonly matInput [value]=\"lossPoint\">\n      </mat-form-field>\n      <div fxLayout=\"column\" fxFlex=\"48\">\n        <mat-form-field>\n          <mat-label><b>production gain point</b></mat-label>\n          <input id=\"gainPoint\" readonly matInput [value]=\"gainPoint\">\n        </mat-form-field>\n        <mat-form-field>\n          <mat-label><b>Desired Salary</b></mat-label>\n          <input id=\"desiredSalary\" matInput [(ngModel)]=\"desiredSalary\" [ngModelOptions]=\"{standalone: true}\" >\n        </mat-form-field>\n      </div>\n    </div>\n  </div>\n</form>\n"
+module.exports = "<div [hidden]=\"updatingChart\" fxLayout.gt-sm=\"row\" fxLayout=\"row\" fxLayoutAlign=\"left stretch\">\n  <div fxLayout=\"column\" fxFlex=\"100\">\n    <div id=\"chart_div\"></div>\n  </div>\n</div>\n\n<div [hidden]=\"!updatingChart\">\n  <app-spinner></app-spinner>\n</div>\n\n<form fxLayout.gt-sm=\"row\" fxLayout=\"row\" fxLayoutAlign=\"space-between stretch\" [formGroup]=\"formGroup\" (keypress)=\"onEnter($event)\">\n  <div fxLayout=\"column\" fxFlex=\"40\">\n    <mat-form-field>\n      <mat-label><b>Base Pay</b></mat-label>\n      <input id=\"basePay\" type=\"number\" matInput formControlName=\"basePay\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Percent Production</b></mat-label>\n      <input id=\"percentProduction\" type=\"number\" min=\"0\" max=\"100\" matInput formControlName=\"percentProduction\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Static Employee Costs</b></mat-label>\n      <input id=\"staticCosts\" type=\"number\" min=\"0\" max=\"1\" matInput formControlName=\"staticCosts\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Pay Based Cost Percentage</b></mat-label>\n      <input id=\"payAdjustedCostPercent\" type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" matInput formControlName=\"payAdjustedCostPercent\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n  </div>\n  <div fxLayout=\"column\" fxFlex=\"40\">\n    <div fxLayout=\"row\" fxLayoutAlign=\"space-between stretch\" >\n      <div fxLayout=\"column\" fxFlex=\"48\">\n        <mat-form-field fxLayout=\"column\" fxFlex=\"48\">\n          <mat-label><b>25% loss point</b></mat-label>\n          <input id=\"lossPoint\" readonly matInput [value]=\"lossPoint\">\n        </mat-form-field>\n        <section class=\"mat-typography\">\n          <h4>Stop Loss</h4>\n          <mat-checkbox id=\"stopLoss\" (change)=\"drawChart('checkbox')\" [(ngModel)]=\"stopLoss\" [ngModelOptions]=\"{standalone: true}\"> </mat-checkbox>\n        </section>\n      </div>\n      <div fxLayout=\"column\" fxFlex=\"48\">\n        <mat-form-field>\n          <mat-label><b>production gain point</b></mat-label>\n          <input id=\"gainPoint\" readonly matInput [value]=\"gainPoint\">\n        </mat-form-field>\n        <mat-form-field>\n          <mat-label><b>Desired Salary</b></mat-label>\n          <input id=\"desiredSalary\" matInput [(ngModel)]=\"desiredSalary\" [ngModelOptions]=\"{standalone: true}\" >\n        </mat-form-field>\n      </div>\n    </div>\n  </div>\n</form>\n"
 
 /***/ }),
 
@@ -114,10 +125,11 @@ var AppComponent = /** @class */ (function () {
         this.chartService = chartService;
         this.updatingChart = false;
         this.stepSize = 500;
-        this.calculatedDomain = { min: this.stepSize, max: 2000000 };
+        this.calculatedDomain = { min: 120000, max: 2000000 };
         this.xAxis = { min: 120000, max: 720000 };
         this.desiredSalary = 85000;
-        this.status = false;
+        this.stopLoss = false;
+        this.costToProductionLossPercent = .25;
     }
     AppComponent.prototype.ngOnInit = function () {
         // let func = function () {
@@ -193,9 +205,25 @@ var AppComponent = /** @class */ (function () {
         var productionPay = production * percentProduction;
         var additionalProductionPay = productionPay - basePay > 0 ?
             productionPay - basePay : 0;
-        var totalPay = basePay + additionalProductionPay;
-        var totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
-        var costToProduction = totalCost / production;
+        var totalPay = 0;
+        var totalCost = 0;
+        var costToProduction = 0;
+        if (this.stopLoss) {
+            totalPay = basePay + additionalProductionPay;
+            totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
+            costToProduction = totalCost / production;
+            // determine totalPay based on costToProductionLossPercent
+            if (costToProduction > this.costToProductionLossPercent) {
+                totalPay = (this.costToProductionLossPercent * production - staticCosts) / (payAdjustedCostPercent + 1);
+                totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
+                costToProduction = totalCost / production;
+            }
+        }
+        else {
+            totalPay = basePay + additionalProductionPay;
+            totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
+            costToProduction = totalCost / production;
+        }
         return {
             production: this.chartService.trunc(production),
             totalPay: this.chartService.trunc(totalPay),
@@ -218,6 +246,7 @@ var AppComponent = /** @class */ (function () {
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
             selector: 'app-root',
             template: __webpack_require__(/*! ./app.component.html */ "./src/app/components/app.component.html"),
+            styles: [__webpack_require__(/*! ./app.component.css */ "./src/app/components/app.component.css")]
         }),
         tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormBuilder"],
             _services_chart_service__WEBPACK_IMPORTED_MODULE_3__["ChartService"]])
@@ -338,7 +367,7 @@ var ChartService = /** @class */ (function () {
         //   return "gold";
         // } else 
         var opacity = proSalData.totalPay <= desiredSalary ? .15 : 1;
-        if (proSalData.costToProduction >= 25) {
+        if (proSalData.costToProduction > 25) {
             return "color: red; opacity: " + opacity + ";";
         }
         else if (proSalData.costToProduction > 24) {
