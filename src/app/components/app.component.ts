@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProSalData } from "../models/pro-sal-data.model"
 import { Domain } from "../models/domain.model"
 import { ChartService } from '../services/chart.service';
+import { Observable, Subject } from 'rxjs';
 declare let google: any;
 
 @Component({
@@ -12,19 +13,28 @@ declare let google: any;
 export class AppComponent implements OnInit {
   lineChartData: Object;
   formGroup: FormGroup;
-  private stepSize = 100;
+  updatingChart: boolean = false;
+  private stepSize = 500;
   private calculatedDomain: Domain = { min: this.stepSize, max: 2000000 };
-  private xAxis: Domain = {min:50000, max:700000};
+  private xAxis: Domain = {min:120000, max:720000};
   lossPoint: number;
   gainPoint: number;
-  desiredBasePay: number;
+  desiredSalary: number = 85000;
+  debouncedInput: KeyboardEvent;
+
+  status: boolean = false;
 
   constructor(public fb: FormBuilder,
               public chartService: ChartService) {
-    this.desiredBasePay = 78000;
   }
 
   ngOnInit(): void {
+    // let func = function () {
+    //   this.status = !this.status;
+    //   setTimeout(() => { func.bind(this)() }, 1000)
+    // };
+    // func.bind(this)();
+
     this.formGroup = this.fb.group({
       "basePay": 78000,
       "percentProduction": 18.5,
@@ -35,12 +45,19 @@ export class AppComponent implements OnInit {
     google.charts.setOnLoadCallback(this.drawChart.bind(this));
   }
 
-  drawChart() {
+  drawChart(where:string = "onload") {
+    if (this.updatingChart) {
+      return;
+    }
+    this.updatingChart = true;
+    // console.log(`${where}  ${this.updatingChart}`);
     var dataTable = new google.visualization.DataTable();
     dataTable.addColumn('number', 'Production');
     dataTable.addColumn('number', 'Cost/Production');
     // A column for custom tooltip content
     dataTable.addColumn({ type: 'string', role: 'tooltip', 'p': { 'html': true } });
+    dataTable.addColumn({ type: 'string', role: 'style' });
+
     dataTable.addRows(this.googleCreateProductionData());
 
     var options = {
@@ -55,6 +72,8 @@ export class AppComponent implements OnInit {
     };
     var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
     chart.draw(dataTable, options);
+    this.updatingChart = false;
+    // console.log(`${where}  ${this.updatingChart}`);
   }
 
   googleCreateProductionData(): Array<Array<any>> {
@@ -68,15 +87,17 @@ export class AppComponent implements OnInit {
     // set gain and loss points
     let lossDataPoint = this.chartService.closest(proSalData, "costToProduction", 25);
     this.lossPoint = lossDataPoint == null ? null : lossDataPoint.production;
-    let gainDataPoint = this.chartService.closest(proSalData, "totalPay", this.desiredBasePay);
+    let gainDataPoint = this.chartService.closest(proSalData, "totalPay", this.desiredSalary);
     this.gainPoint = gainDataPoint == null ? null : gainDataPoint.production;
 
     let ret = new Array<Array<any>>();
     proSalData
       .filter((psd: ProSalData) => this.xAxis.min < psd.production && psd.production < this.xAxis.max)
       .forEach((psd: ProSalData) => {
-        ret.push([psd.production, psd.costToProduction, this.chartService.createToolTipString(psd)]);
+        ret.push([psd.production, psd.costToProduction, this.chartService.createToolTipString(psd), this.chartService.psdToColor(psd, this.desiredSalary)]);
       });
+
+    // console.log(JSON.stringify(ret));
 
     return ret;
   }
@@ -106,7 +127,13 @@ export class AppComponent implements OnInit {
 
   onEnter(event: KeyboardEvent) {
     if (event.keyCode == 13) {
-      this.drawChart();
+      if (this.debouncedInput &&  this.debouncedInput.timeStamp == event.timeStamp) {
+        // console.log("throwing away one.")
+        return;
+      }
+      this.debouncedInput = event;
+      this.drawChart("onEnter");
+      return false
     }
   }
 }

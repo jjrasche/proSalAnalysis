@@ -23,193 +23,6 @@ webpackEmptyAsyncContext.id = "./src/$$_lazy_route_resource lazy recursive";
 
 /***/ }),
 
-/***/ "./src/app/app.component.css":
-/*!***********************************!*\
-  !*** ./src/app/app.component.css ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2FwcC5jb21wb25lbnQuY3NzIn0= */"
-
-/***/ }),
-
-/***/ "./src/app/app.component.html":
-/*!************************************!*\
-  !*** ./src/app/app.component.html ***!
-  \************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = "<div fxLayout.gt-sm=\"row\" fxLayout=\"row\" fxLayoutAlign=\"left stretch\">\n  <div fxLayout=\"column\" fxFlex=\"100\">\n    <div id=\"chart_div\"></div>\n  </div>\n</div>\n<form fxLayout.gt-sm=\"row\" fxLayout=\"row\" fxLayoutAlign=\"space-between stretch\" [formGroup]=\"formGroup\" (keydown)=\"onEnter($event)\">\n  <div fxLayout=\"column\" fxFlex=\"40\">\n    <mat-form-field>\n      <mat-label><b>Base Pay</b></mat-label>\n      <input id=\"basePay\" type=\"number\" (blur)=\"drawChart()\" matInput formControlName=\"basePay\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Percent Production</b></mat-label>\n      <input id=\"percentProduction\" type=\"number\" min=\"0\" max=\"100\" (blur)=\"drawChart()\" matInput formControlName=\"percentProduction\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Static Employee Costs</b></mat-label>\n      <input id=\"staticCosts\" type=\"number\" min=\"0\" max=\"1\" (blur)=\"drawChart()\" matInput formControlName=\"staticCosts\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Pay Based Cost Percentage</b></mat-label>\n      <input id=\"payAdjustedCostPercent\" type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" (blur)=\"drawChart()\" matInput formControlName=\"payAdjustedCostPercent\">\n    </mat-form-field>\n  </div>\n  <div fxLayout=\"column\" fxFlex=\"40\">\n    <div fxLayout=\"row\" fxLayoutAlign=\"space-between stretch\" >\n      <mat-form-field fxLayout=\"column\" fxFlex=\"48\">\n        <mat-label><b>25% loss point</b></mat-label>\n        <input id=\"lossPoint\" readonly matInput [value]=\"lossPoint\">\n      </mat-form-field>\n      <div fxLayout=\"column\" fxFlex=\"48\">\n        <mat-form-field>\n          <mat-label><b>production gain point</b></mat-label>\n          <input id=\"gainPoint\" readonly matInput [value]=\"gainPoint\">\n        </mat-form-field>\n        <mat-form-field>\n          <mat-label><b>Desired Base Pay</b></mat-label>\n          <input id=\"desiredBasePay\" matInput [(value)]=\"desiredBasePay\" (blur)=\"drawChart()\">\n        </mat-form-field>\n      </div>\n    </div>\n  </div>\n</form>\n"
-
-/***/ }),
-
-/***/ "./src/app/app.component.ts":
-/*!**********************************!*\
-  !*** ./src/app/app.component.ts ***!
-  \**********************************/
-/*! exports provided: AppComponent */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppComponent", function() { return AppComponent; });
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
-/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
-
-
-
-var AppComponent = /** @class */ (function () {
-    function AppComponent(fb) {
-        this.fb = fb;
-        this.stepSize = 200;
-        this.calculatedDomain = { min: this.stepSize, max: 2000000 };
-        this.xAxis = { min: 50000, max: 700000 };
-        this.desiredBasePay = 78000;
-    }
-    AppComponent.prototype.ngOnInit = function () {
-        this.formGroup = this.fb.group({
-            "basePay": 78000,
-            "percentProduction": 18.5,
-            "staticCosts": 5700,
-            "payAdjustedCostPercent": 8.38
-        });
-        google.charts.load('current', { 'packages': ['corechart'] });
-        google.charts.setOnLoadCallback(this.drawChart.bind(this));
-        // this.lineChartData = {
-        //   chartType: 'LineChart',
-        //   dataTable: this.createDataTable(),
-        //   options: { 'title': 'Production' },
-        // };
-    };
-    AppComponent.prototype.drawChart = function () {
-        var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn('number', 'Production');
-        dataTable.addColumn('number', 'Cost/Production');
-        // A column for custom tooltip content
-        dataTable.addColumn({ type: 'string', role: 'tooltip', 'p': { 'html': true } });
-        dataTable.addRows(this.googleCreateProductionData());
-        var options = {
-            tooltip: { isHtml: true },
-            legend: 'none',
-            explorer: {
-                actions: ['dragToZoom', 'rightClickToReset'],
-                axis: 'horizontal',
-                keepInBounds: true,
-                maxZoomIn: 4.0
-            }
-        };
-        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-        chart.draw(dataTable, options);
-    };
-    AppComponent.prototype.createDataTable = function () {
-        var ret = [
-            ['Production', 'Cost/Production'],
-        ];
-        var productionData = this.createProductionData();
-        return ret.concat(productionData);
-    };
-    AppComponent.prototype.createProductionData = function () {
-        var data = new Array();
-        var xVal = this.calculatedDomain.min;
-        while (xVal <= this.calculatedDomain.max) {
-            var proSalData = this.proSalFunction(xVal);
-            data.push([xVal, proSalData.costToProduction, proSalData.totalPay, proSalData.totalCost]);
-            xVal += this.stepSize;
-        }
-        return data;
-    };
-    AppComponent.prototype.googleCreateProductionData = function () {
-        var _this = this;
-        var proSalData = new Array();
-        var xVal = this.calculatedDomain.min;
-        while (xVal <= this.calculatedDomain.max) {
-            proSalData.push(this.proSalFunction(xVal));
-            xVal += this.stepSize;
-        }
-        // set gain and loss points
-        var lossDataPoint = proSalData.find(function (psd) { return psd.costToProduction < 25; });
-        this.lossPoint = lossDataPoint == null ? null : lossDataPoint.production;
-        var gainDataPoint = proSalData.find(function (psd) { return psd.totalPay > _this.desiredBasePay; });
-        var gainDataPoint2 = this.closest(proSalData, "totalPay", this.desiredBasePay);
-        this.gainPoint = gainDataPoint2 == null ? null : gainDataPoint2.production;
-        console.log(proSalData.length);
-        var ret = new Array();
-        proSalData
-            .filter(function (psd) { return _this.xAxis.min < psd.production && psd.production < _this.xAxis.max; })
-            .forEach(function (psd) {
-            ret.push([psd.production, psd.costToProduction, _this.createToolTipString(psd)]);
-        });
-        return ret;
-    };
-    AppComponent.prototype.closest = function (array, key, goal) {
-        return array.reduce(function (prev, curr) {
-            return (Math.abs(curr[key] - goal) < Math.abs(prev[key] - goal) ? curr : prev);
-        });
-    };
-    AppComponent.prototype.createToolTipString = function (data) {
-        return "<span>\n        <span>Production: " + data.production.toString() + "</span></br>\n        <span>Cost: " + data.totalCost.toString() + "</span></br>\n        <span><b>Pay: " + data.totalPay.toString() + "</b></span></br>\n        <span>Cost/Production: " + data.costToProduction.toString() + "</span>\n      </span>";
-    };
-    AppComponent.prototype.proSalFunction = function (production) {
-        var basePay = this.formGroup.get("basePay").value;
-        var percentProduction = this.toPercent(this.formGroup.get("percentProduction").value);
-        var staticCosts = this.formGroup.get("staticCosts").value;
-        var payAdjustedCostPercent = this.toPercent(this.formGroup.get("payAdjustedCostPercent").value);
-        var productionPay = production * percentProduction;
-        var additionalProductionPay = productionPay - basePay > 0 ?
-            productionPay - basePay : 0;
-        var totalPay = basePay + additionalProductionPay;
-        var totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
-        var costToProduction = totalCost / production;
-        return {
-            production: this.trunc(production),
-            totalPay: this.trunc(totalPay),
-            totalCost: this.trunc(totalCost),
-            costToProduction: this.trunc(this.fromPercent(costToProduction))
-        };
-    };
-    AppComponent.prototype.trunc = function (input, precision) {
-        if (precision === void 0) { precision = 2; }
-        return parseFloat(input.toFixed(precision));
-    };
-    AppComponent.prototype.toPercent = function (input) {
-        return input / 100;
-    };
-    AppComponent.prototype.fromPercent = function (input) {
-        return input * 100;
-    };
-    AppComponent.prototype.onEnter = function (event) {
-        if (event.keyCode == 13) {
-            this.drawChart();
-        }
-    };
-    AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
-        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
-            selector: 'app-root',
-            template: __webpack_require__(/*! ./app.component.html */ "./src/app/app.component.html"),
-            styles: [__webpack_require__(/*! ./app.component.css */ "./src/app/app.component.css")]
-        }),
-        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormBuilder"]])
-    ], AppComponent);
-    return AppComponent;
-}());
-
-var Domain = /** @class */ (function () {
-    function Domain() {
-    }
-    return Domain;
-}());
-var ProSalData = /** @class */ (function () {
-    function ProSalData() {
-    }
-    return ProSalData;
-}());
-
-
-/***/ }),
-
 /***/ "./src/app/app.module.ts":
 /*!*******************************!*\
   !*** ./src/app/app.module.ts ***!
@@ -226,8 +39,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var ng2_google_charts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ng2-google-charts */ "./node_modules/ng2-google-charts/index.js");
 /* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
 /* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/platform-browser/animations */ "./node_modules/@angular/platform-browser/fesm5/animations.js");
-/* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
+/* harmony import */ var _components_app_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/app.component */ "./src/app/components/app.component.ts");
 /* harmony import */ var _material_material_module__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./material/material.module */ "./src/app/material/material.module.ts");
+/* harmony import */ var _components_spinner_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/spinner.component */ "./src/app/components/spinner.component.ts");
+
 
 
 
@@ -242,7 +57,8 @@ var AppModule = /** @class */ (function () {
     AppModule = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_2__["NgModule"])({
             declarations: [
-                _app_component__WEBPACK_IMPORTED_MODULE_6__["AppComponent"]
+                _components_app_component__WEBPACK_IMPORTED_MODULE_6__["AppComponent"],
+                _components_spinner_component__WEBPACK_IMPORTED_MODULE_8__["SpinnerComponent"]
             ],
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"],
@@ -253,10 +69,191 @@ var AppModule = /** @class */ (function () {
                 _material_material_module__WEBPACK_IMPORTED_MODULE_7__["MaterialModule"]
             ],
             providers: [],
-            bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_6__["AppComponent"]]
+            bootstrap: [_components_app_component__WEBPACK_IMPORTED_MODULE_6__["AppComponent"]]
         })
     ], AppModule);
     return AppModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/components/app.component.html":
+/*!***********************************************!*\
+  !*** ./src/app/components/app.component.html ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div [hidden]=\"updatingChart\" fxLayout.gt-sm=\"row\" fxLayout=\"row\" fxLayoutAlign=\"left stretch\">\n  <div fxLayout=\"column\" fxFlex=\"100\">\n    <div id=\"chart_div\"></div>\n  </div>\n</div>\n\n<div [hidden]=\"!updatingChart\">\n  <app-spinner></app-spinner>\n</div>\n\n<form fxLayout.gt-sm=\"row\" fxLayout=\"row\" fxLayoutAlign=\"space-between stretch\" [formGroup]=\"formGroup\" (keypress)=\"onEnter($event)\">\n  <div fxLayout=\"column\" fxFlex=\"40\">\n    <mat-form-field>\n      <mat-label><b>Base Pay</b></mat-label>\n      <input id=\"basePay\" type=\"number\" matInput formControlName=\"basePay\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Percent Production</b></mat-label>\n      <input id=\"percentProduction\" type=\"number\" min=\"0\" max=\"100\" matInput formControlName=\"percentProduction\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Static Employee Costs</b></mat-label>\n      <input id=\"staticCosts\" type=\"number\" min=\"0\" max=\"1\" matInput formControlName=\"staticCosts\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label><b>Pay Based Cost Percentage</b></mat-label>\n      <input id=\"payAdjustedCostPercent\" type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" matInput formControlName=\"payAdjustedCostPercent\" (keypress)=\"onEnter($event)\">\n    </mat-form-field>\n  </div>\n  <div fxLayout=\"column\" fxFlex=\"40\">\n    <div fxLayout=\"row\" fxLayoutAlign=\"space-between stretch\" >\n      <mat-form-field fxLayout=\"column\" fxFlex=\"48\">\n        <mat-label><b>25% loss point</b></mat-label>\n        <input id=\"lossPoint\" readonly matInput [value]=\"lossPoint\">\n      </mat-form-field>\n      <div fxLayout=\"column\" fxFlex=\"48\">\n        <mat-form-field>\n          <mat-label><b>production gain point</b></mat-label>\n          <input id=\"gainPoint\" readonly matInput [value]=\"gainPoint\">\n        </mat-form-field>\n        <mat-form-field>\n          <mat-label><b>Desired Salary</b></mat-label>\n          <input id=\"desiredSalary\" matInput [(ngModel)]=\"desiredSalary\" [ngModelOptions]=\"{standalone: true}\" >\n        </mat-form-field>\n      </div>\n    </div>\n  </div>\n</form>\n"
+
+/***/ }),
+
+/***/ "./src/app/components/app.component.ts":
+/*!*********************************************!*\
+  !*** ./src/app/components/app.component.ts ***!
+  \*********************************************/
+/*! exports provided: AppComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppComponent", function() { return AppComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
+/* harmony import */ var _services_chart_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/chart.service */ "./src/app/services/chart.service.ts");
+
+
+
+
+var AppComponent = /** @class */ (function () {
+    function AppComponent(fb, chartService) {
+        this.fb = fb;
+        this.chartService = chartService;
+        this.updatingChart = false;
+        this.stepSize = 500;
+        this.calculatedDomain = { min: this.stepSize, max: 2000000 };
+        this.xAxis = { min: 120000, max: 720000 };
+        this.desiredSalary = 85000;
+        this.status = false;
+    }
+    AppComponent.prototype.ngOnInit = function () {
+        // let func = function () {
+        //   this.status = !this.status;
+        //   setTimeout(() => { func.bind(this)() }, 1000)
+        // };
+        // func.bind(this)();
+        this.formGroup = this.fb.group({
+            "basePay": 78000,
+            "percentProduction": 18.5,
+            "staticCosts": 5700,
+            "payAdjustedCostPercent": 8.38
+        });
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(this.drawChart.bind(this));
+    };
+    AppComponent.prototype.drawChart = function (where) {
+        if (where === void 0) { where = "onload"; }
+        if (this.updatingChart) {
+            return;
+        }
+        this.updatingChart = true;
+        // console.log(`${where}  ${this.updatingChart}`);
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn('number', 'Production');
+        dataTable.addColumn('number', 'Cost/Production');
+        // A column for custom tooltip content
+        dataTable.addColumn({ type: 'string', role: 'tooltip', 'p': { 'html': true } });
+        dataTable.addColumn({ type: 'string', role: 'style' });
+        dataTable.addRows(this.googleCreateProductionData());
+        var options = {
+            tooltip: { isHtml: true },
+            legend: 'none',
+            explorer: {
+                actions: ['dragToZoom', 'rightClickToReset'],
+                axis: 'horizontal',
+                keepInBounds: true,
+                maxZoomIn: 4.0
+            }
+        };
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(dataTable, options);
+        this.updatingChart = false;
+        // console.log(`${where}  ${this.updatingChart}`);
+    };
+    AppComponent.prototype.googleCreateProductionData = function () {
+        var _this = this;
+        var proSalData = new Array();
+        var xVal = this.calculatedDomain.min;
+        while (xVal <= this.calculatedDomain.max) {
+            proSalData.push(this.proSalFunction(xVal));
+            xVal += this.stepSize;
+        }
+        // set gain and loss points
+        var lossDataPoint = this.chartService.closest(proSalData, "costToProduction", 25);
+        this.lossPoint = lossDataPoint == null ? null : lossDataPoint.production;
+        var gainDataPoint = this.chartService.closest(proSalData, "totalPay", this.desiredSalary);
+        this.gainPoint = gainDataPoint == null ? null : gainDataPoint.production;
+        var ret = new Array();
+        proSalData
+            .filter(function (psd) { return _this.xAxis.min < psd.production && psd.production < _this.xAxis.max; })
+            .forEach(function (psd) {
+            ret.push([psd.production, psd.costToProduction, _this.chartService.createToolTipString(psd), _this.chartService.psdToColor(psd, _this.desiredSalary)]);
+        });
+        // console.log(JSON.stringify(ret));
+        return ret;
+    };
+    AppComponent.prototype.proSalFunction = function (production) {
+        var basePay = this.formGroup.get("basePay").value;
+        var percentProduction = this.chartService.toPercent(this.formGroup.get("percentProduction").value);
+        var staticCosts = this.formGroup.get("staticCosts").value;
+        var payAdjustedCostPercent = this.chartService.toPercent(this.formGroup.get("payAdjustedCostPercent").value);
+        var productionPay = production * percentProduction;
+        var additionalProductionPay = productionPay - basePay > 0 ?
+            productionPay - basePay : 0;
+        var totalPay = basePay + additionalProductionPay;
+        var totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
+        var costToProduction = totalCost / production;
+        return {
+            production: this.chartService.trunc(production),
+            totalPay: this.chartService.trunc(totalPay),
+            totalCost: this.chartService.trunc(totalCost),
+            costToProduction: this.chartService.trunc(this.chartService.fromPercent(costToProduction))
+        };
+    };
+    AppComponent.prototype.onEnter = function (event) {
+        if (event.keyCode == 13) {
+            if (this.debouncedInput && this.debouncedInput.timeStamp == event.timeStamp) {
+                // console.log("throwing away one.")
+                return;
+            }
+            this.debouncedInput = event;
+            this.drawChart("onEnter");
+            return false;
+        }
+    };
+    AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-root',
+            template: __webpack_require__(/*! ./app.component.html */ "./src/app/components/app.component.html"),
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormBuilder"],
+            _services_chart_service__WEBPACK_IMPORTED_MODULE_3__["ChartService"]])
+    ], AppComponent);
+    return AppComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/components/spinner.component.ts":
+/*!*************************************************!*\
+  !*** ./src/app/components/spinner.component.ts ***!
+  \*************************************************/
+/*! exports provided: SpinnerComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SpinnerComponent", function() { return SpinnerComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+
+
+var SpinnerComponent = /** @class */ (function () {
+    function SpinnerComponent() {
+    }
+    SpinnerComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-spinner',
+            template: "  \n    <div fxLayout=\"row\" fxLayoutAlign=\"center center\">\n      <mat-spinner> </mat-spinner>\n    </div>\n    ",
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+    ], SpinnerComponent);
+    return SpinnerComponent;
 }());
 
 
@@ -313,6 +310,73 @@ var MaterialModule = /** @class */ (function () {
         })
     ], MaterialModule);
     return MaterialModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/services/chart.service.ts":
+/*!*******************************************!*\
+  !*** ./src/app/services/chart.service.ts ***!
+  \*******************************************/
+/*! exports provided: ChartService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ChartService", function() { return ChartService; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+
+
+var ChartService = /** @class */ (function () {
+    function ChartService() {
+    }
+    ChartService.prototype.psdToColor = function (proSalData, desiredSalary) {
+        // if (proSalData.totalPay >= desiredSalary) {
+        //   return "gold";
+        // } else 
+        var opacity = proSalData.totalPay <= desiredSalary ? .15 : 1;
+        if (proSalData.costToProduction >= 25) {
+            return "color: red; opacity: " + opacity + ";";
+        }
+        else if (proSalData.costToProduction > 24) {
+            return "color: yellow; opacity: " + opacity + ";";
+        }
+        else if (proSalData.costToProduction > 22) {
+            return "color: green; opacity: " + opacity + ";";
+        }
+        else if (proSalData.costToProduction > 21) {
+            return "color: yellow; opacity: " + opacity + ";";
+        }
+        return "color: red; opacity: " + opacity + ";";
+    };
+    ChartService.prototype.closest = function (array, key, goal) {
+        return array.reduce(function (prev, curr) {
+            return (Math.abs(curr[key] - goal) <= Math.abs(prev[key] - goal) ? curr : prev);
+        });
+    };
+    ChartService.prototype.createToolTipString = function (data) {
+        return "<span>\n        <span>Production: " + data.production.toString() + "</span></br>\n        <span>Cost: " + data.totalCost.toString() + "</span></br>\n        <span><b>Pay: " + data.totalPay.toString() + "</b></span></br>\n        <span>Cost/Production: " + data.costToProduction.toString() + "</span>\n      </span>";
+    };
+    ChartService.prototype.trunc = function (input, precision) {
+        if (precision === void 0) { precision = 2; }
+        return parseFloat(input.toFixed(precision));
+    };
+    ChartService.prototype.toPercent = function (input) {
+        return input / 100;
+    };
+    ChartService.prototype.fromPercent = function (input) {
+        return input * 100;
+    };
+    ChartService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
+            providedIn: 'root'
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+    ], ChartService);
+    return ChartService;
 }());
 
 
