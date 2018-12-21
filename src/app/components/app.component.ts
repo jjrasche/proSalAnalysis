@@ -153,4 +153,12 @@ export class AppComponent implements OnInit {
       return false
     }
   }
+  setStopLoss() {
+    this.drawChart();
+    if (this.stopLoss) {
+      this.formGroup.get("basePay").disable();
+    } else {
+      this.formGroup.get("basePay").enable();
+    }
+  }
 }

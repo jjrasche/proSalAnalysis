@@ -10,7 +10,7 @@
 
 <form fxLayout.gt-sm="row" fxLayout="row" fxLayoutAlign="space-between stretch" [formGroup]="formGroup" (keypress)="onEnter($event)">
   <div fxLayout="column" fxFlex="40">
-    <mat-form-field>
+    <mat-form-field >
       <mat-label><b>Base Pay</b></mat-label>
       <input id="basePay" type="number" matInput formControlName="basePay" (keypress)="onEnter($event)">
     </mat-form-field>
@@ -36,7 +36,7 @@
         </mat-form-field>
         <section class="mat-typography">
           <h4>Stop Loss</h4>
-          <mat-checkbox id="stopLoss" (change)="drawChart('checkbox')" [(ngModel)]="stopLoss" [ngModelOptions]="{standalone: true}"> </mat-checkbox>
+          <mat-checkbox id="stopLoss" (change)="setStopLoss()" [(ngModel)]="stopLoss" [ngModelOptions]="{standalone: true}"> </mat-checkbox>
         </section>
       </div>
       <div fxLayout="column" fxFlex="48">
