@@ -5,3 +5,12 @@
 h4 {
   margin: 0 0 0px;
 }
+
+red-color {
+  color: red;
+}
+
+.w3-red,.w3-hover-red:hover {
+  color:#000;
+  background-color:#f44336;
+}

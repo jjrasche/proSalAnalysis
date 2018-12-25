@@ -8,23 +8,6 @@ export class ChartService {
 
   constructor() { }
 
-  psdToColor(proSalData: ProSalData, desiredSalary: number) {
-    // if (proSalData.totalPay >= desiredSalary) {
-    //   return "gold";
-    // } else 
-    let opacity = proSalData.totalPay <= desiredSalary ? .15 : 1;
-    if (proSalData.costToProduction > 25) {
-      return `color: red; opacity: ${opacity};`
-    } else if (proSalData.costToProduction > 24) {
-      return `color: yellow; opacity: ${opacity};`
-    } else if (proSalData.costToProduction > 22) {
-      return `color: green; opacity: ${opacity};`
-    } else if (proSalData.costToProduction > 21) {
-      return `color: yellow; opacity: ${opacity};`
-    }
-    return `color: red; opacity: ${opacity};`
-  }
-
   closest(array: Array<any>, key: string, goal: number) {
     return array.reduce(function (prev, curr) {
       return (Math.abs(curr[key] - goal) <= Math.abs(prev[key] - goal) ? curr : prev);

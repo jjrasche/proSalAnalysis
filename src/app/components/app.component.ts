@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { ProSalData } from "../models/pro-sal-data.model"
 import { Domain } from "../models/domain.model"
 import { ChartService } from '../services/chart.service';
-import { Observable, Subject } from 'rxjs';
 declare let google: any;
 
 @Component({
@@ -16,15 +15,16 @@ export class AppComponent implements OnInit {
   formGroup: FormGroup;
   updatingChart: boolean = false;
   private stepSize = 500;
-  private calculatedDomain: Domain = { min: 120000, max: 2000000 };
+  private calculatedDomain: Domain = { min: 120000, max: 1200000 };
   private xAxis: Domain = {min:120000, max:720000};
   lossPoint: number;
   gainPoint: number;
-  desiredSalary: number = 85000;
   debouncedInput: KeyboardEvent;
-  stopLoss: boolean = false
-  costToProductionLossPercent: number = .25;
-
+  
+  public get costToProductionLossPercent() : number {
+    return this.formGroup.get("unacceptablyHighCostToProduction").value / 100;
+  }
+  
   constructor(public fb: FormBuilder,
               public chartService: ChartService) {
   }
@@ -38,15 +38,44 @@ export class AppComponent implements OnInit {
 
     this.formGroup = this.fb.group({
       "basePay": 78000,
+      "desiredSalary": 85000,
       "percentProduction": 18.5,
       "staticCosts": 5700,
-      "payAdjustedCostPercent": 8.38
-    });
+      "payAdjustedCostPercent": 8.38,
+      "stopLoss": false,
+      "unacceptablyLowCostToProduction": 21,
+      "fairLowCostToProduction": 22,
+      "fairHighCostToProduction": 24,
+      "unacceptablyHighCostToProduction": 25,
+    }, { validators: this.costToProducitonInputRangeValidations });
     google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(this.drawChart.bind(this));
+
+    this.formGroup.get("stopLoss").valueChanges.pipe()
+      .subscribe((stopLoss: boolean) => {
+        this.drawChart();
+        if (stopLoss) {
+          this.formGroup.get("basePay").disable();
+        } else {
+          this.formGroup.get("basePay").enable();
+        }
+      });
+
+    // this.formGroup.get("unacceptablyLowCostToProduction").valueChanges.pipe()
+    //   .subscribe((unacceptableLow: number) => {
+    //     if (unacceptableLow > this.formGroup.get("fairLowCostToProduction").value ||
+    //       unacceptableLow > this.formGroup.get("fairHighCostToProduction").value ||
+    //       unacceptableLow > this.formGroup.get("unacceptablyHighCostToProduction").value){
+            
+    //     }
+    //     this.drawChart();
+    //   });
   }
 
   drawChart(where:string = "onload") {
+    if(this.formGroup.errors) {
+      return;
+    }
     if (this.updatingChart) {
       return;
     }
@@ -88,14 +117,14 @@ export class AppComponent implements OnInit {
     // set gain and loss points
     let lossDataPoint = this.chartService.closest(proSalData, "costToProduction", 25);
     this.lossPoint = lossDataPoint == null ? null : lossDataPoint.production;
-    let gainDataPoint = this.chartService.closest(proSalData, "totalPay", this.desiredSalary);
+    let gainDataPoint = this.chartService.closest(proSalData, "totalPay", this.formGroup.get("desiredSalary").value);
     this.gainPoint = gainDataPoint == null ? null : gainDataPoint.production;
 
     let ret = new Array<Array<any>>();
     proSalData
       .filter((psd: ProSalData) => this.xAxis.min < psd.production && psd.production < this.xAxis.max)
       .forEach((psd: ProSalData) => {
-        ret.push([psd.production, psd.costToProduction, this.chartService.createToolTipString(psd), this.chartService.psdToColor(psd, this.desiredSalary)]);
+        ret.push([psd.production, psd.costToProduction, this.chartService.createToolTipString(psd), this.psdToColor(psd)]);
       });
 
     // console.log(JSON.stringify(ret));
@@ -117,7 +146,7 @@ export class AppComponent implements OnInit {
     let totalPay: number = 0
     let totalCost: number = 0;
     let costToProduction: number = 0;
-    if (this.stopLoss) {
+    if (this.formGroup.get("stopLoss").value) {
       totalPay = basePay + additionalProductionPay;
       totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
       costToProduction = totalCost / production;
@@ -142,6 +171,22 @@ export class AppComponent implements OnInit {
     };
   }
 
+  psdToColor(proSalData: ProSalData) {
+    let opacity = proSalData.totalPay <= this.formGroup.get("desiredSalary").value ? .15 : 1;
+
+    if (proSalData.costToProduction > this.formGroup.get("unacceptablyHighCostToProduction").value) {
+      return `color: red; opacity: ${opacity};`
+    } else if (proSalData.costToProduction > this.formGroup.get("fairHighCostToProduction").value) {
+      return `color: yellow; opacity: ${opacity};`
+    } else if (proSalData.costToProduction > this.formGroup.get("fairLowCostToProduction").value) {
+      return `color: green; opacity: ${opacity};`
+    } else if (proSalData.costToProduction > this.formGroup.get("unacceptablyLowCostToProduction").value) {
+      return `color: yellow; opacity: ${opacity};`
+    }
+    return `color: red; opacity: ${opacity};`
+  }
+
+
   onEnter(event: KeyboardEvent) {
     if (event.keyCode == 13) {
       if (this.debouncedInput &&  this.debouncedInput.timeStamp == event.timeStamp) {
@@ -153,12 +198,15 @@ export class AppComponent implements OnInit {
       return false
     }
   }
-  setStopLoss() {
-    this.drawChart();
-    if (this.stopLoss) {
-      this.formGroup.get("basePay").disable();
-    } else {
-      this.formGroup.get("basePay").enable();
-    }
-  }
+
+  private costToProducitonInputRangeValidations: ValidatorFn = (fg: FormGroup): ValidationErrors | null => {
+    const unacceptablyLowCostToProduction = fg.get("unacceptablyLowCostToProduction").value;
+    const fairLowCostToProduction = fg.get("fairLowCostToProduction").value;
+    const fairHighCostToProduction = fg.get("fairHighCostToProduction").value;
+    const unacceptablyHighCostToProduction = fg.get("unacceptablyHighCostToProduction").value;
+
+    return unacceptablyHighCostToProduction < fairHighCostToProduction ||
+      fairHighCostToProduction < fairLowCostToProduction ||
+      fairLowCostToProduction < unacceptablyLowCostToProduction ? { 'invalidCostToProducitonRange': true } : null;
+  };
 }

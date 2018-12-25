@@ -15,6 +15,10 @@
       <input id="basePay" type="number" matInput formControlName="basePay" (blur)="drawChart('basePay')" (keypress)="onEnter($event)">
     </mat-form-field>
     <mat-form-field>
+      <mat-label><b>Desired Salary</b></mat-label>
+      <input id="desiredSalary" type="number" matInput formControlName="desiredSalary" (blur)="drawChart('desiredSalary')" (keypress)="onEnter($event)">
+    </mat-form-field>
+    <mat-form-field>
       <mat-label><b>Percent Production</b></mat-label>
       <input id="percentProduction" type="number" min="0" max="100" matInput formControlName="percentProduction" (blur)="drawChart('percentProduction')" (keypress)="onEnter($event)">
     </mat-form-field>
@@ -26,29 +30,45 @@
       <mat-label><b>Pay Based Cost Percentage</b></mat-label>
       <input id="payAdjustedCostPercent" type="number" min="0" max="100" step="0.1" matInput formControlName="payAdjustedCostPercent" (blur)="drawChart('payAdjustedCostPercent')" (keypress)="onEnter($event)">
     </mat-form-field>
+    <section class="mat-typography">
+      <h4>Stop Loss</h4>
+      <mat-checkbox id="stopLoss" formControlName="stopLoss"> </mat-checkbox>
+    </section>
   </div>
   <div fxLayout="column" fxFlex="40">
-    <div fxLayout="row" fxLayoutAlign="space-between stretch" >
-      <div fxLayout="column" fxFlex="48">
-        <mat-form-field fxLayout="column" fxFlex="48">
-          <mat-label><b>25% loss point</b></mat-label>
-          <input id="lossPoint" readonly matInput [value]="lossPoint">
-        </mat-form-field>
-        <section class="mat-typography">
-          <h4>Stop Loss</h4>
-          <mat-checkbox id="stopLoss" (change)="setStopLoss()" [(ngModel)]="stopLoss" [ngModelOptions]="{standalone: true}"> </mat-checkbox>
-        </section>
-      </div>
-      <div fxLayout="column" fxFlex="48">
-        <mat-form-field>
-          <mat-label><b>production gain point</b></mat-label>
-          <input id="gainPoint" readonly matInput [value]="gainPoint">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label><b>Desired Salary</b></mat-label>
-          <input id="desiredSalary" matInput [(ngModel)]="desiredSalary" [ngModelOptions]="{standalone: true}" (blur)="drawChart('desiredSalary')" (keypress)="onEnter($event)">
-        </mat-form-field>
-      </div>
+    <div fxLayout="row" fxLayoutAlign="space-around center" >
+      <mat-form-field>
+        <mat-label><b>25% loss point</b></mat-label>
+        <input id="lossPoint" readonly matInput [value]="lossPoint">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label><b>production gain point</b></mat-label>
+        <input id="gainPoint" readonly matInput [value]="gainPoint">
+      </mat-form-field>
+    </div>
+    <div *ngIf="formGroup.errors?.invalidCostToProducitonRange && (formGroup.touched || formGroup.dirty)" class="w3-red">
+      Cost to Production range is invalid.
+    </div>
+    <section fxLayout="row" fxLayoutAlign="center center"  class="mat-typography">
+      <h4><b>Cost To Production Ranges</b></h4>
+    </section>
+    <div fxLayout="row" fxLayoutAlign="space-around center" >
+      <mat-form-field fxLayout="column" fxFlex="20">
+        <mat-label style="color:red;"><b>Too Low</b></mat-label>
+        <input id="unacceptablyLowCostToProduction" style="color:red;" type="number" matInput formControlName="unacceptablyLowCostToProduction" (blur)="drawChart('unacceptablyLowCostToProduction')" (keypress)="onEnter($event)">
+      </mat-form-field>
+      <mat-form-field fxLayout="column" fxFlex="20">
+        <mat-label style="color:green;"><b>Fair Low</b></mat-label>
+        <input id="fairLowCostToProduction" style="color:green;" type="number" matInput formControlName="fairLowCostToProduction" (blur)="drawChart('fairLowCostToProduction')" (keypress)="onEnter($event)">
+      </mat-form-field>
+      <mat-form-field fxLayout="column" fxFlex="20">
+        <mat-label style="color:green;"><b>Fair High</b></mat-label>
+        <input id="fairHighCostToProduction" style="color:green;" type="number" matInput formControlName="fairHighCostToProduction" (blur)="drawChart('fairHighCostToProduction')" (keypress)="onEnter($event)">
+      </mat-form-field>
+      <mat-form-field fxLayout="column" fxFlex="20">
+        <mat-label style="color:red;"><b>Too High</b></mat-label>
+        <input id="unacceptablyHighCostToProduction" style="color:red;" type="number" matInput formControlName="unacceptablyHighCostToProduction" (blur)="drawChart('unacceptablyHighCostToProduction')" (keypress)="onEnter($event)">
+      </mat-form-field>
     </div>
   </div>
 </form>
