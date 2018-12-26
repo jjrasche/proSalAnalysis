@@ -46,7 +46,7 @@
         <input id="gainPoint" readonly matInput [value]="gainPoint">
       </mat-form-field>
     </div>
-    <div *ngIf="formGroup.errors?.invalidCostToProducitonRange && (formGroup.touched || formGroup.dirty)" class="w3-red">
+    <div *ngIf="formGroup.errors?.invalidRange && (formGroup.touched || formGroup.dirty)" class="w3-red">
       Cost to Production range is invalid.
     </div>
     <section fxLayout="row" fxLayoutAlign="center center"  class="mat-typography">
@@ -54,20 +54,20 @@
     </section>
     <div fxLayout="row" fxLayoutAlign="space-around center" >
       <mat-form-field fxLayout="column" fxFlex="20">
-        <mat-label style="color:red;"><b>Too Low</b></mat-label>
-        <input id="unacceptablyLowCostToProduction" style="color:red;" type="number" matInput formControlName="unacceptablyLowCostToProduction" (blur)="drawChart('unacceptablyLowCostToProduction')" (keypress)="onEnter($event)">
+        <mat-label style="color:red;"><b>Unfair Low</b></mat-label>
+        <input id="unfairLow" style="color:red;" type="number" matInput formControlName="unfairLow" (blur)="drawChart('unfairLow')" (keypress)="onEnter($event)">
       </mat-form-field>
       <mat-form-field fxLayout="column" fxFlex="20">
         <mat-label style="color:green;"><b>Fair Low</b></mat-label>
-        <input id="fairLowCostToProduction" style="color:green;" type="number" matInput formControlName="fairLowCostToProduction" (blur)="drawChart('fairLowCostToProduction')" (keypress)="onEnter($event)">
+        <input id="fairLow" style="color:green;" type="number" matInput formControlName="fairLow" (blur)="drawChart('fairLow')" (keypress)="onEnter($event)">
       </mat-form-field>
       <mat-form-field fxLayout="column" fxFlex="20">
         <mat-label style="color:green;"><b>Fair High</b></mat-label>
-        <input id="fairHighCostToProduction" style="color:green;" type="number" matInput formControlName="fairHighCostToProduction" (blur)="drawChart('fairHighCostToProduction')" (keypress)="onEnter($event)">
+        <input id="fairHigh" style="color:green;" type="number" matInput formControlName="fairHigh" (blur)="drawChart('fairHigh')" (keypress)="onEnter($event)">
       </mat-form-field>
       <mat-form-field fxLayout="column" fxFlex="20">
-        <mat-label style="color:red;"><b>Too High</b></mat-label>
-        <input id="unacceptablyHighCostToProduction" style="color:red;" type="number" matInput formControlName="unacceptablyHighCostToProduction" (blur)="drawChart('unacceptablyHighCostToProduction')" (keypress)="onEnter($event)">
+        <mat-label style="color:red;"><b>Unfair High</b></mat-label>
+        <input id="unfairHigh" style="color:red;" type="number" matInput formControlName="unfairHigh" (blur)="drawChart('unfairHigh')" (keypress)="onEnter($event)">
       </mat-form-field>
     </div>
   </div>

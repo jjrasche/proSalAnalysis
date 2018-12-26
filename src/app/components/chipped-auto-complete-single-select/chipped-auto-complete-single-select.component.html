@@ -1,0 +1,25 @@
+<div fxLayout="row">
+  <section class="mat-typography">
+    <button mat-button id="single-chipped-input-save-button" [disabled]="this.selected == null" (click)="save()">Save</button>>
+  </section>
+  <mat-form-field class="chipped-single-input">
+    <mat-chip-list #selectedChip>
+      <mat-chip (removed)="removeSelection()">{{ itemSelected }}
+        <!-- <mat-icon matChipRemove>cancel</mat-icon> -->
+      </mat-chip>
+      <input
+        #singleChippedInput
+        id = "single-chipped-input"
+        placeholder="Create, remove, or select an item"
+        [formControl]="inputControl"
+        [matAutocomplete]="auto"
+        [matChipInputFor]="selectedChip">
+    </mat-chip-list>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+      <mat-option *ngFor="let item of filteredItems | async" [value]="item">
+        {{ item }}
+        <button mat-button (click)="delete(item)"> Delete </button>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

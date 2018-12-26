@@ -3,6 +3,8 @@ import { FormGroup, FormBuilder, ValidatorFn, ValidationErrors } from '@angular/
 import { ProSalData } from "../models/pro-sal-data.model"
 import { Domain } from "../models/domain.model"
 import { ChartService } from '../services/chart.service';
+import { LocalStorageService } from '../services/local-storage.service';
+import { ProSalForm, DefaultProSalForm } from '../models/pro-sal-form.model';
 declare let google: any;
 
 @Component({
@@ -11,46 +13,33 @@ declare let google: any;
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
+  t = DefaultProSalForm;
   lineChartData: Object;
   formGroup: FormGroup;
   updatingChart: boolean = false;
   private stepSize = 500;
-  private calculatedDomain: Domain = { min: 120000, max: 1200000 };
+  private calculatedDomain: Domain = { min: 0, max: 1500000 };
   private xAxis: Domain = {min:120000, max:720000};
   lossPoint: number;
   gainPoint: number;
   debouncedInput: KeyboardEvent;
   
   public get costToProductionLossPercent() : number {
-    return this.formGroup.get("unacceptablyHighCostToProduction").value / 100;
+    return this.formGroup.get("unfairHigh").value / 100;
   }
   
   constructor(public fb: FormBuilder,
-              public chartService: ChartService) {
+              public chartService: ChartService,
+              private localStorageService: LocalStorageService) {
   }
 
   ngOnInit(): void {
-    // let func = function () {
-    //   this.status = !this.status;
-    //   setTimeout(() => { func.bind(this)() }, 1000)
-    // };
-    // func.bind(this)();
-
-    this.formGroup = this.fb.group({
-      "basePay": 78000,
-      "desiredSalary": 85000,
-      "percentProduction": 18.5,
-      "staticCosts": 5700,
-      "payAdjustedCostPercent": 8.38,
-      "stopLoss": false,
-      "unacceptablyLowCostToProduction": 21,
-      "fairLowCostToProduction": 22,
-      "fairHighCostToProduction": 24,
-      "unacceptablyHighCostToProduction": 25,
-    }, { validators: this.costToProducitonInputRangeValidations });
-    google.charts.load('current', { 'packages': ['corechart'] });
-    google.charts.setOnLoadCallback(this.drawChart.bind(this));
-
+    let storedForm = this.localStorageService.getFormFromLocalStorage();
+    if (storedForm == null) {
+      this.formGroup = this.convertProSalToForm();
+    } else {
+      this.formGroup = this.convertProSalToForm(storedForm);
+    }
     this.formGroup.get("stopLoss").valueChanges.pipe()
       .subscribe((stopLoss: boolean) => {
         this.drawChart();
@@ -61,15 +50,8 @@ export class AppComponent implements OnInit {
         }
       });
 
-    // this.formGroup.get("unacceptablyLowCostToProduction").valueChanges.pipe()
-    //   .subscribe((unacceptableLow: number) => {
-    //     if (unacceptableLow > this.formGroup.get("fairLowCostToProduction").value ||
-    //       unacceptableLow > this.formGroup.get("fairHighCostToProduction").value ||
-    //       unacceptableLow > this.formGroup.get("unacceptablyHighCostToProduction").value){
-            
-    //     }
-    //     this.drawChart();
-    //   });
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(this.drawChart.bind(this));
   }
 
   drawChart(where:string = "onload") {
@@ -79,6 +61,8 @@ export class AppComponent implements OnInit {
     if (this.updatingChart) {
       return;
     }
+
+    this.localStorageService.saveFormToLocalStorage(this.formGroup.value);
     this.updatingChart = true;
     // console.log(`${where}  ${this.updatingChart}`);
     var dataTable = new google.visualization.DataTable();
@@ -172,15 +156,15 @@ export class AppComponent implements OnInit {
   }
 
   psdToColor(proSalData: ProSalData) {
-    let opacity = proSalData.totalPay <= this.formGroup.get("desiredSalary").value ? .15 : 1;
+    let opacity = proSalData.totalPay <= this.formGroup.get("desiredSalary").value ? .2 : 1;
 
-    if (proSalData.costToProduction > this.formGroup.get("unacceptablyHighCostToProduction").value) {
+    if (proSalData.costToProduction > this.formGroup.get("unfairHigh").value) {
       return `color: red; opacity: ${opacity};`
-    } else if (proSalData.costToProduction > this.formGroup.get("fairHighCostToProduction").value) {
+    } else if (proSalData.costToProduction > this.formGroup.get("fairHigh").value) {
       return `color: yellow; opacity: ${opacity};`
-    } else if (proSalData.costToProduction > this.formGroup.get("fairLowCostToProduction").value) {
+    } else if (proSalData.costToProduction > this.formGroup.get("fairLow").value) {
       return `color: green; opacity: ${opacity};`
-    } else if (proSalData.costToProduction > this.formGroup.get("unacceptablyLowCostToProduction").value) {
+    } else if (proSalData.costToProduction > this.formGroup.get("unfairLow").value) {
       return `color: yellow; opacity: ${opacity};`
     }
     return `color: red; opacity: ${opacity};`
@@ -199,14 +183,29 @@ export class AppComponent implements OnInit {
     }
   }
 
-  private costToProducitonInputRangeValidations: ValidatorFn = (fg: FormGroup): ValidationErrors | null => {
-    const unacceptablyLowCostToProduction = fg.get("unacceptablyLowCostToProduction").value;
-    const fairLowCostToProduction = fg.get("fairLowCostToProduction").value;
-    const fairHighCostToProduction = fg.get("fairHighCostToProduction").value;
-    const unacceptablyHighCostToProduction = fg.get("unacceptablyHighCostToProduction").value;
+  private invalidRangeValidations: ValidatorFn = (fg: FormGroup): ValidationErrors | null => {
+    const unfairLow = fg.get("unfairLow").value;
+    const fairLow = fg.get("fairLow").value;
+    const fairHigh = fg.get("fairHigh").value;
+    const unfairHigh = fg.get("unfairHigh").value;
 
-    return unacceptablyHighCostToProduction < fairHighCostToProduction ||
-      fairHighCostToProduction < fairLowCostToProduction ||
-      fairLowCostToProduction < unacceptablyLowCostToProduction ? { 'invalidCostToProducitonRange': true } : null;
-  };
+    return unfairHigh < fairHigh ||
+      fairHigh < fairLow ||
+      fairLow < unfairLow ? { 'invalidRange': true } : null;
+  }
+
+  convertProSalToForm(proSal: ProSalForm = DefaultProSalForm): FormGroup {
+    return this.fb.group({
+      "basePay": proSal.basePay,
+      "desiredSalary": proSal.desiredSalary,
+      "percentProduction": proSal.percentProduction,
+      "staticCosts": proSal.staticCosts,
+      "payAdjustedCostPercent": proSal.payAdjustedCostPercent,
+      "stopLoss": proSal.stopLoss,
+      "unfairLow": proSal.unfairLow,
+      "fairLow": proSal.fairLow,
+      "fairHigh": proSal.fairHigh,
+      "unfairHigh": proSal.unfairHigh,
+    }, { validators: this.invalidRangeValidations });
+  }
 }

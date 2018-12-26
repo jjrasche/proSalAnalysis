@@ -7,11 +7,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './components/app.component';
 import { MaterialModule } from './material/material.module';
 import { SpinnerComponent } from './components/spinner.component';
+import { ChippedAutoCompleteSingleSelectComponent } from './components/chipped-auto-complete-single-select/chipped-auto-complete-single-select.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    ChippedAutoCompleteSingleSelectComponent
   ],
   imports: [
     BrowserModule,
