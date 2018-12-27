@@ -37,12 +37,16 @@ export class ChippedAutoCompleteSingleSelectComponent {
     this.selectedItem = null;
     this.filteredItems = this.inputControl.valueChanges.pipe(
       startWith(null),
-      map((item: string | null) => item ? this.filterItem(item) : this.list.slice()));
+      map((item: string | null) => {
+        return item ? this.filterItem(item) : this.list.slice()
+      })
+    );
   }
 
   private filterItem(item: string): string[] {
     const filterValue = item.toLowerCase();
-    return this.list.filter(item => item.toLowerCase().indexOf(filterValue) === 0);
+    let ret = this.list.filter(item => item.toLowerCase().indexOf(filterValue) === 0);
+    return ret;
   }
 
   /**

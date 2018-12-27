@@ -4,8 +4,9 @@
   </section>
   <mat-form-field class="chipped-single-input">
     <mat-chip-list #selectedChip>
-      <mat-chip (removed)="removeSelection()">{{ itemSelected }}
-        <!-- <mat-icon matChipRemove>cancel</mat-icon> -->
+      <mat-chip *ngIf="selectedItem != null" (removed)="removeSelection()">
+        {{ selectedItem }}
+        <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
       <input
         #singleChippedInput

@@ -8,6 +8,10 @@
   <app-spinner></app-spinner>
 </div>
 
+<app-chipped-auto-complete-single-select [list]="['ice cream','ice cake']">
+
+</app-chipped-auto-complete-single-select>
+
 <form fxLayout.gt-sm="row" fxLayout="row" fxLayoutAlign="space-between stretch" [formGroup]="formGroup" (keypress)="onEnter($event)">
   <div fxLayout="column" fxFlex="40">
     <mat-form-field >
