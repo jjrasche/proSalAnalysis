@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    let storedForm = this.localStorageService.getFormFromLocalStorage();
+    let storedForm = this.localStorageService.getFormFromLocalStorage("test");
     if (storedForm == null) {
       this.formGroup = this.convertProSalToForm();
     } else {
@@ -62,7 +62,7 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    this.localStorageService.saveFormToLocalStorage(this.formGroup.value);
+    this.localStorageService.addFormToLocalStorage("test", this.formGroup.value);
     this.updatingChart = true;
     // console.log(`${where}  ${this.updatingChart}`);
     var dataTable = new google.visualization.DataTable();
