@@ -1,6 +1,9 @@
-<div [hidden]="updatingChart" fxLayout.gt-sm="row" fxLayout="row" fxLayoutAlign="left stretch">
-  <div fxLayout="column" fxFlex="100">
-    <div id="chart_div"></div>
+<div [hidden]="updatingChart" fxLayout="column">
+  <div fxLayout="row" fxLayoutAlign="end stretch">
+    <app-chipped-auto-complete-single-select fxFlex="30" [list]="['ice cream','ice cake']"></app-chipped-auto-complete-single-select>
+  </div>
+  <div fxLayout="row">
+    <div fxFlex="100" id="chart_div"></div>
   </div>
 </div>
 
@@ -8,11 +11,7 @@
   <app-spinner></app-spinner>
 </div>
 
-<app-chipped-auto-complete-single-select [list]="['ice cream','ice cake']">
-
-</app-chipped-auto-complete-single-select>
-
-<form fxLayout.gt-sm="row" fxLayout="row" fxLayoutAlign="space-between stretch" [formGroup]="formGroup" (keypress)="onEnter($event)">
+<form fxLayout="row" fxLayoutAlign="space-between stretch" [formGroup]="formGroup" (keypress)="onEnter($event)">
   <div fxLayout="column" fxFlex="40">
     <mat-form-field >
       <mat-label><b>Base Pay</b></mat-label>
