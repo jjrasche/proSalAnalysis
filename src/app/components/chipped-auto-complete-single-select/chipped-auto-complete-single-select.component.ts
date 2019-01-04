@@ -1,4 +1,4 @@
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatChipInputEvent, MatAutocomplete } from '@angular/material';
@@ -21,11 +21,12 @@ import { map, startWith } from 'rxjs/operators';
 export class ChippedAutoCompleteSingleSelectComponent {
   @Input() list: Array<string> = [];
   @Output() listChanged: EventEmitter<string>;
-  @Output() itemSelected: EventEmitter<string>;
+  @Output() selectedItemChange: EventEmitter<string>;
 
   inputControl: FormControl;
   filteredItems: Observable<Array<string>>;
   selectedItem: string;
+  separatorKeysCodes: Array<number> = [ENTER];
 
   @ViewChild('singleChippedInput') inputElement: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete: MatAutocomplete;
@@ -33,7 +34,7 @@ export class ChippedAutoCompleteSingleSelectComponent {
   constructor() {
     this.inputControl = new FormControl();
     this.listChanged = new EventEmitter<string>();
-    this.itemSelected = new EventEmitter<string>();
+    this.selectedItemChange = new EventEmitter<string>();
     this.selectedItem = null;
     this.filteredItems = this.inputControl.valueChanges.pipe(
       startWith(null),
@@ -53,32 +54,40 @@ export class ChippedAutoCompleteSingleSelectComponent {
    * Add the selectedItem to the list and emit change event
    */
   save(event: MatChipInputEvent): void {
-
     if (this.selectedItem == null) {
-      return;
+      let inputValue = this.inputElement.nativeElement.value;
+      if (inputValue === "") {
+        return;
+      }
+      this.handleSelectionEnterEvent(inputValue);
     }
     this.list.push(this.selectedItem);
     this.listChanged.emit(this.selectedItem);
-    // this.inputControl.setValue(null);
   }
 
-  delete(item: string): void {
-    const index = this.list.indexOf(item);
+  delete(): void {
+    const index = this.list.indexOf(this.selectedItem);
     if (index >= 0) {
       this.list.splice(index, 1);
-      this.listChanged.emit(item);
+      this.listChanged.emit(this.selectedItem);
     }
+    this.removeSelection();
   }
 
   removeSelection(): void {
-    this.itemSelected = null
+    this.selectedItem = null
+    this.selectedItemChange.emit(this.selectedItem);
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    this.selectedItem = event.option.viewValue;
+    this.handleSelectionEnterEvent(event.option.viewValue);
+  }
+
+  handleSelectionEnterEvent(value: string): void {
+    this.selectedItem = value;
     this.inputElement.nativeElement.value = '';
     this.inputControl.setValue(null);
-
-    this.itemSelected.emit(this.selectedItem);
+    this.selectedItemChange.emit(this.selectedItem);
   }
+
 }

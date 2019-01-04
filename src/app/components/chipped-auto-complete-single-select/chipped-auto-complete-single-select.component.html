@@ -1,26 +1,30 @@
-<div fxLayout="row">
-  <section class="mat-typography">
-    <button mat-button id="single-chipped-input-save-button" [disabled]="this.selected == null" (click)="save()">Save</button>>
-  </section>
-  <mat-form-field class="chipped-single-input">
-    <mat-chip-list #selectedChip>
-      <mat-chip *ngIf="selectedItem != null" (removed)="removeSelection()">
-        {{ selectedItem }}
-        <mat-icon matChipRemove>cancel</mat-icon>
-      </mat-chip>
-      <input
-        #singleChippedInput
-        id = "single-chipped-input"
-        placeholder="Create, remove, or select an item"
-        [formControl]="inputControl"
-        [matAutocomplete]="auto"
-        [matChipInputFor]="selectedChip">
-    </mat-chip-list>
-    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-      <mat-option *ngFor="let item of filteredItems | async" [value]="item">
-        {{ item }}
-        <button mat-button (click)="delete(item)"> Delete </button>
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
+<div fxLayout="row" fxLayoutAlign="end center" >
+  <div fxLayout="column" fxFlex="70">
+    <mat-form-field class="chipped-single-input">
+      <mat-chip-list #selectedChip>
+        <mat-chip *ngIf="selectedItem != null" (removed)="removeSelection()">
+          {{ selectedItem }}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input
+          #singleChippedInput
+          id = "single-chipped-input"
+          placeholder="Create, remove, or select an item"
+          [formControl]="inputControl"
+          [matAutocomplete]="auto"
+          [matChipInputFor]="selectedChip">
+      </mat-chip-list>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+        <mat-option *ngFor="let item of filteredItems | async" [value]="item">
+          {{ item }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+  <div fxLayout="column" fxFlex="30">
+    <section fxLayout="row" fxLayoutAlign="end stretch" class="mat-typography">
+      <button mat-flat-button id="single-chipped-input-save-button" color="primary" [disabled]="this.selected == null" (click)="save()">Save</button>
+      <button mat-flat-button id="single-chipped-input-delete-button" color="warn" [disabled]="this.selected == null" (click)="delete()">Delete</button>
+    </section>
+  </div>
 </div>
