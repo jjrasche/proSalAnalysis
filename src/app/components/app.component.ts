@@ -84,12 +84,13 @@ export class AppComponent implements OnInit {
     var options = {
       tooltip: { isHtml: true },
       legend: 'none',
+      chartArea: { 'left': 20, 'bottom': 20, "right": 5, "top": 5 },
       explorer: {
         actions: ['dragToZoom', 'rightClickToReset'],
         axis: 'horizontal',
         keepInBounds: true,
         maxZoomIn: 4.0
-      }
+      },
     };
     var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
     chart.draw(dataTable, options);
@@ -195,9 +196,18 @@ export class AppComponent implements OnInit {
     this.localStorageService.removeFormFromLocalStorage();
   }
 
+  /**
+   * - save selection to local storage
+   * - import saved form information if selection is valid
+   * - redraw chart with new information
+   */
   itemSelected(formName: string) {
     this.localStorageService.setSelectedForm(formName);
-    this.formGroup = this.savedFormService.getSelectedFormFromLocalStorage();
-    this.drawChart();
+    
+    // if removed the selected form, then maintain the formGroup values.
+    if (formName != null) {
+      this.formGroup = this.savedFormService.getSelectedFormFromLocalStorage();
+      this.drawChart();
+    }
   }
 }

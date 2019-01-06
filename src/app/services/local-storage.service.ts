@@ -29,7 +29,7 @@ export class LocalStorageService {
   safeAddFormToLocalStorage(form: ProSalForm) {
     let forms = this.getFormsFromLocalStorage();
     let selectedForm = this.getSelectedForm();
-    if (selectedForm == "null" || forms == {}) {
+    if (selectedForm == null || forms == {}) {
       return;
     }
     this.addForm(forms, selectedForm, form);
@@ -58,7 +58,11 @@ export class LocalStorageService {
   }
 
   setSelectedForm(formName: string) {
-    localStorage.setItem(selectedFormKey, formName);
+    if (formName == null) {
+      localStorage.removeItem(selectedFormKey);
+    } else {
+      localStorage.setItem(selectedFormKey, formName);
+    }
     // if (formName == null) {
     //   throw Error("selectedForm shouldn't be null!");
     // }

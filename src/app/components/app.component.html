@@ -1,14 +1,14 @@
-<div [hidden]="updatingChart" fxLayout="column">
-  <div fxLayout="row" fxLayoutAlign="end stretch">
-    <app-chipped-auto-complete-single-select fxFlex="30"
+<div [hidden]="updatingChart" fxLayout="row">
+  <div fxLayout="column" fxFlex="85">
+    <div id="chart_div"></div>
+  </div>
+  <div fxLayout="column" fxFlex="15">
+    <app-chipped-auto-complete-single-select
       (itemSaved)="saveForm()"
       (itemRemoved)="removeForm()"
       (selectedItemChange)="itemSelected($event)"
       [(list)]="formList"
       [selectedItem]="initialSelectedForm"></app-chipped-auto-complete-single-select>
-  </div>
-  <div fxLayout="row">
-    <div fxFlex="100" id="chart_div"></div>
   </div>
 </div>
 
@@ -16,7 +16,7 @@
   <app-spinner></app-spinner>
 </div>
 
-<form fxLayout="row" fxLayoutAlign="space-between stretch" [formGroup]="formGroup" (keypress)="onEnter($event)">
+<form fxLayout="row" fxLayoutAlign="space-between stretch" class="top-margin" [formGroup]="formGroup" (keypress)="onEnter($event)">
   <div fxLayout="column" fxFlex="40">
     <mat-form-field >
       <mat-label><b>Base Pay</b></mat-label>
