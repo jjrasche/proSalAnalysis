@@ -86,7 +86,7 @@ export class ChippedAutoCompleteSingleSelectComponent implements OnInit {
    * the input becomes the selected item and two events are emitted
    * conveying both item selected and item saved
    */
-  save(event: MatChipInputEvent): void {
+  save(): void {
     if (this.selectedItem == null) {
       let inputValue = this.inputElement.nativeElement.value;
       if (inputValue === "") {
