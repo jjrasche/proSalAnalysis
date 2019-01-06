@@ -5,6 +5,7 @@ import { Domain } from "../models/domain.model"
 import { ChartService } from '../services/chart.service';
 import { LocalStorageService } from '../services/local-storage.service';
 import { ProSalForm, DefaultProSalForm } from '../models/pro-sal-form.model';
+import { SavedFormService } from '../services/saved-form.service';
 declare let google: any;
 
 @Component({
@@ -13,7 +14,6 @@ declare let google: any;
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  t = DefaultProSalForm;
   lineChartData: Object;
   formGroup: FormGroup;
   updatingChart: boolean = false;
@@ -23,6 +23,8 @@ export class AppComponent implements OnInit {
   lossPoint: number;
   gainPoint: number;
   debouncedInput: KeyboardEvent;
+  formList: Array<string>;
+  initialSelectedForm: string;
   
   public get costToProductionLossPercent() : number {
     return this.formGroup.get("unfairHigh").value / 100;
@@ -30,16 +32,21 @@ export class AppComponent implements OnInit {
   
   constructor(public fb: FormBuilder,
               public chartService: ChartService,
-              private localStorageService: LocalStorageService) {
+              private localStorageService: LocalStorageService,
+              private savedFormService: SavedFormService) {
   }
 
   ngOnInit(): void {
-    let storedForm = this.localStorageService.getFormFromLocalStorage("test");
-    if (storedForm == null) {
-      this.formGroup = this.convertProSalToForm();
-    } else {
-      this.formGroup = this.convertProSalToForm(storedForm);
-    }
+    this.formGroup = this.savedFormService.getSelectedFormFromLocalStorage();
+    this.initialSelectedForm = this.localStorageService.getSelectedForm();
+    let forms = this.localStorageService.getFormsFromLocalStorage();
+    this.formList = Object.keys(forms);
+
+    console.log(`initial
+    selected from: ${this.initialSelectedForm}
+    form list: ${JSON.stringify(this.formList)}
+    `)
+
     this.formGroup.get("stopLoss").valueChanges.pipe()
       .subscribe((stopLoss: boolean) => {
         this.drawChart();
@@ -54,7 +61,7 @@ export class AppComponent implements OnInit {
     google.charts.setOnLoadCallback(this.drawChart.bind(this));
   }
 
-  drawChart(where:string = "onload") {
+  drawChart() {
     if(this.formGroup.errors) {
       return;
     }
@@ -62,9 +69,9 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    this.localStorageService.addFormToLocalStorage("test", this.formGroup.value);
+    this.localStorageService.safeAddFormToLocalStorage(this.formGroup.value);
+
     this.updatingChart = true;
-    // console.log(`${where}  ${this.updatingChart}`);
     var dataTable = new google.visualization.DataTable();
     dataTable.addColumn('number', 'Production');
     dataTable.addColumn('number', 'Cost/Production');
@@ -87,7 +94,6 @@ export class AppComponent implements OnInit {
     var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
     chart.draw(dataTable, options);
     this.updatingChart = false;
-    // console.log(`${where}  ${this.updatingChart}`);
   }
 
   googleCreateProductionData(): Array<Array<any>> {
@@ -110,8 +116,6 @@ export class AppComponent implements OnInit {
       .forEach((psd: ProSalData) => {
         ret.push([psd.production, psd.costToProduction, this.chartService.createToolTipString(psd), this.psdToColor(psd)]);
       });
-
-    // console.log(JSON.stringify(ret));
 
     return ret;
   }
@@ -178,34 +182,22 @@ export class AppComponent implements OnInit {
         return;
       }
       this.debouncedInput = event;
-      this.drawChart("onEnter");
+      this.drawChart();
       return false
     }
   }
 
-  private invalidRangeValidations: ValidatorFn = (fg: FormGroup): ValidationErrors | null => {
-    const unfairLow = fg.get("unfairLow").value;
-    const fairLow = fg.get("fairLow").value;
-    const fairHigh = fg.get("fairHigh").value;
-    const unfairHigh = fg.get("unfairHigh").value;
-
-    return unfairHigh < fairHigh ||
-      fairHigh < fairLow ||
-      fairLow < unfairLow ? { 'invalidRange': true } : null;
+  saveForm() {
+    this.localStorageService.addFormToLocalStorage(this.formGroup.getRawValue());
   }
 
-  convertProSalToForm(proSal: ProSalForm = DefaultProSalForm): FormGroup {
-    return this.fb.group({
-      "basePay": proSal.basePay,
-      "desiredSalary": proSal.desiredSalary,
-      "percentProduction": proSal.percentProduction,
-      "staticCosts": proSal.staticCosts,
-      "payAdjustedCostPercent": proSal.payAdjustedCostPercent,
-      "stopLoss": proSal.stopLoss,
-      "unfairLow": proSal.unfairLow,
-      "fairLow": proSal.fairLow,
-      "fairHigh": proSal.fairHigh,
-      "unfairHigh": proSal.unfairHigh,
-    }, { validators: this.invalidRangeValidations });
+  removeForm() {
+    this.localStorageService.removeFormFromLocalStorage();
+  }
+
+  itemSelected(formName: string) {
+    this.localStorageService.setSelectedForm(formName);
+    this.formGroup = this.savedFormService.getSelectedFormFromLocalStorage();
+    this.drawChart();
   }
 }

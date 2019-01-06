@@ -20,12 +20,13 @@ import { map, startWith } from 'rxjs/operators';
 })
 export class ChippedAutoCompleteSingleSelectComponent {
   @Input() list: Array<string> = [];
-  @Output() listChanged: EventEmitter<string>;
+  @Input() selectedItem: string = null;
+  @Output() itemSaved: EventEmitter<string>;
+  @Output() itemRemoved: EventEmitter<string>;
   @Output() selectedItemChange: EventEmitter<string>;
 
   inputControl: FormControl;
   filteredItems: Observable<Array<string>>;
-  selectedItem: string;
   separatorKeysCodes: Array<number> = [ENTER];
 
   @ViewChild('singleChippedInput') inputElement: ElementRef<HTMLInputElement>;
@@ -33,7 +34,8 @@ export class ChippedAutoCompleteSingleSelectComponent {
 
   constructor() {
     this.inputControl = new FormControl();
-    this.listChanged = new EventEmitter<string>();
+    this.itemSaved = new EventEmitter<string>();
+    this.itemRemoved = new EventEmitter<string>();
     this.selectedItemChange = new EventEmitter<string>();
     this.selectedItem = null;
     this.filteredItems = this.inputControl.valueChanges.pipe(
@@ -62,14 +64,14 @@ export class ChippedAutoCompleteSingleSelectComponent {
       this.handleSelectionEnterEvent(inputValue);
     }
     this.list.push(this.selectedItem);
-    this.listChanged.emit(this.selectedItem);
+    this.itemSaved.emit(this.selectedItem);
   }
 
   delete(): void {
     const index = this.list.indexOf(this.selectedItem);
     if (index >= 0) {
       this.list.splice(index, 1);
-      this.listChanged.emit(this.selectedItem);
+      this.itemRemoved.emit(this.selectedItem);
     }
     this.removeSelection();
   }

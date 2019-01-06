@@ -1,6 +1,11 @@
 <div [hidden]="updatingChart" fxLayout="column">
   <div fxLayout="row" fxLayoutAlign="end stretch">
-    <app-chipped-auto-complete-single-select fxFlex="30" [list]="['ice cream','ice cake']"></app-chipped-auto-complete-single-select>
+    <app-chipped-auto-complete-single-select fxFlex="30"
+      (itemSaved)="saveForm()"
+      (itemRemoved)="removeForm()"
+      (selectedItemChange)="itemSelected($event)"
+      [(list)]="formList"
+      [selectedItem]="initialSelectedForm"></app-chipped-auto-complete-single-select>
   </div>
   <div fxLayout="row">
     <div fxFlex="100" id="chart_div"></div>
@@ -15,23 +20,23 @@
   <div fxLayout="column" fxFlex="40">
     <mat-form-field >
       <mat-label><b>Base Pay</b></mat-label>
-      <input id="basePay" type="number" matInput formControlName="basePay" (blur)="drawChart('basePay')" (keypress)="onEnter($event)">
+      <input id="basePay" type="number" matInput formControlName="basePay" (blur)="drawChart()" (keypress)="onEnter($event)">
     </mat-form-field>
     <mat-form-field>
       <mat-label><b>Desired Salary</b></mat-label>
-      <input id="desiredSalary" type="number" matInput formControlName="desiredSalary" (blur)="drawChart('desiredSalary')" (keypress)="onEnter($event)">
+      <input id="desiredSalary" type="number" matInput formControlName="desiredSalary" (blur)="drawChart()" (keypress)="onEnter($event)">
     </mat-form-field>
     <mat-form-field>
       <mat-label><b>Percent Production</b></mat-label>
-      <input id="percentProduction" type="number" min="0" max="100" matInput formControlName="percentProduction" (blur)="drawChart('percentProduction')" (keypress)="onEnter($event)">
+      <input id="percentProduction" type="number" min="0" max="100" matInput formControlName="percentProduction" (blur)="drawChart()" (keypress)="onEnter($event)">
     </mat-form-field>
     <mat-form-field>
       <mat-label><b>Static Employee Costs</b></mat-label>
-      <input id="staticCosts" type="number" min="0" max="1" matInput formControlName="staticCosts" (blur)="drawChart('staticCosts')" (keypress)="onEnter($event)">
+      <input id="staticCosts" type="number" min="0" max="1" matInput formControlName="staticCosts" (blur)="drawChart()" (keypress)="onEnter($event)">
     </mat-form-field>
     <mat-form-field>
       <mat-label><b>Pay Based Cost Percentage</b></mat-label>
-      <input id="payAdjustedCostPercent" type="number" min="0" max="100" step="0.1" matInput formControlName="payAdjustedCostPercent" (blur)="drawChart('payAdjustedCostPercent')" (keypress)="onEnter($event)">
+      <input id="payAdjustedCostPercent" type="number" min="0" max="100" step="0.1" matInput formControlName="payAdjustedCostPercent" (blur)="drawChart()" (keypress)="onEnter($event)">
     </mat-form-field>
     <section class="mat-typography">
       <h4>Stop Loss</h4>
@@ -58,19 +63,19 @@
     <div fxLayout="row" fxLayoutAlign="space-around center" >
       <mat-form-field fxLayout="column" fxFlex="20">
         <mat-label style="color:red;"><b>Unfair Low</b></mat-label>
-        <input id="unfairLow" style="color:red;" type="number" matInput formControlName="unfairLow" (blur)="drawChart('unfairLow')" (keypress)="onEnter($event)">
+        <input id="unfairLow" style="color:red;" type="number" matInput formControlName="unfairLow" (blur)="drawChart()" (keypress)="onEnter($event)">
       </mat-form-field>
       <mat-form-field fxLayout="column" fxFlex="20">
         <mat-label style="color:green;"><b>Fair Low</b></mat-label>
-        <input id="fairLow" style="color:green;" type="number" matInput formControlName="fairLow" (blur)="drawChart('fairLow')" (keypress)="onEnter($event)">
+        <input id="fairLow" style="color:green;" type="number" matInput formControlName="fairLow" (blur)="drawChart()" (keypress)="onEnter($event)">
       </mat-form-field>
       <mat-form-field fxLayout="column" fxFlex="20">
         <mat-label style="color:green;"><b>Fair High</b></mat-label>
-        <input id="fairHigh" style="color:green;" type="number" matInput formControlName="fairHigh" (blur)="drawChart('fairHigh')" (keypress)="onEnter($event)">
+        <input id="fairHigh" style="color:green;" type="number" matInput formControlName="fairHigh" (blur)="drawChart()" (keypress)="onEnter($event)">
       </mat-form-field>
       <mat-form-field fxLayout="column" fxFlex="20">
         <mat-label style="color:red;"><b>Unfair High</b></mat-label>
-        <input id="unfairHigh" style="color:red;" type="number" matInput formControlName="unfairHigh" (blur)="drawChart('unfairHigh')" (keypress)="onEnter($event)">
+        <input id="unfairHigh" style="color:red;" type="number" matInput formControlName="unfairHigh" (blur)="drawChart()" (keypress)="onEnter($event)">
       </mat-form-field>
     </div>
   </div>

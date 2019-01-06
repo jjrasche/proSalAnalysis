@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ProSalForm } from '../models/pro-sal-form.model';
 
-const forsmKey = "pro-sal-analyisis-saved-data"
+const formsKey = "pro-sal-analyisis-saved-data";
+const selectedFormKey = "pro-sal-selected-form";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -9,24 +11,57 @@ export class LocalStorageService {
 
   constructor() { }
 
-  private getFormsFromLocalStorage(): { name: ProSalForm } {
-    return JSON.parse(localStorage.getItem(`${forsmKey}`)) as { name: ProSalForm };
+  getFormsFromLocalStorage(): Object {
+    let forms = JSON.parse(localStorage.getItem(formsKey)) as { name: ProSalForm };
+    return forms == null ? {} : forms;
   }
 
-  getFormFromLocalStorage(formName: string): ProSalForm {
+  addFormToLocalStorage(form: ProSalForm) {
     let forms = this.getFormsFromLocalStorage();
-    return forms[formName];
+    let selectedForm = this.getSelectedForm();
+    if (selectedForm == null) {
+      throw Error("selectedForm shouldn't be null!");
+    }
+    this.addForm(forms, selectedForm, form);
+    console.log(`added form ${selectedForm} to local storage. count(${Object.keys(forms).length})`)
   }
 
-  addFormToLocalStorage(formName: string, form: ProSalForm) {
+  safeAddFormToLocalStorage(form: ProSalForm) {
     let forms = this.getFormsFromLocalStorage();
-    forms[formName] = form;
-    localStorage.setItem(forsmKey, JSON.stringify(forms));
+    let selectedForm = this.getSelectedForm();
+    if (selectedForm == "null" || forms == {}) {
+      return;
+    }
+    this.addForm(forms, selectedForm, form);
+    console.log(`added safe form ${selectedForm} to local storage. count(${Object.keys(forms).length})`)
   }
 
-  removeFormFromLocalStorage(formName: string) {
+  private addForm(forms: Object, selectedForm: string, form: ProSalForm) {
+    forms[selectedForm] = form;
+    localStorage.setItem(formsKey, JSON.stringify(forms));
+  }
+
+  removeFormFromLocalStorage() {
     let forms = this.getFormsFromLocalStorage();
-    delete forms[formName];
-    localStorage.setItem(forsmKey, JSON.stringify(forms));
+    let selectedForm = this.getSelectedForm();
+    if (selectedForm == null) {
+      throw Error("selectedForm shouldn't be null!");
+    }
+    delete forms[selectedForm];
+    localStorage.setItem(formsKey, JSON.stringify(forms)); 
+    console.log(`removed form ${selectedForm} from local storage. count(${Object.keys(forms).length})`)
+
+  }
+
+  getSelectedForm(): string {
+    return localStorage.getItem(selectedFormKey);
+  }
+
+  setSelectedForm(formName: string) {
+    localStorage.setItem(selectedFormKey, formName);
+    // if (formName == null) {
+    //   throw Error("selectedForm shouldn't be null!");
+    // }
+    console.log(`set selected form to ${formName} in local storage. count(${Object.keys(this.getFormsFromLocalStorage()).length})`)
   }
 }

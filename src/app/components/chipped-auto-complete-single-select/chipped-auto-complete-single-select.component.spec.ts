@@ -64,7 +64,7 @@ describe('ChippedAutoCompleteSingleSelectComponent', () => {
   }));
 
   it('When clicking delete on a selected autocomplete option, a change event is emitted and the inputs are modified', fakeAsync(() => {
-    spyOn(component.listChanged, 'emit');
+    spyOn(component.itemRemoved, 'emit');
     component.list = ["ice cream"];
     sendInput("i").then(() => {
       selectOption(0);
@@ -72,7 +72,7 @@ describe('ChippedAutoCompleteSingleSelectComponent', () => {
       clickButton(document.getElementById("single-chipped-input-delete-button") as HTMLButtonElement);
 
       expect(component.list).toEqual([]);
-      expect(component.listChanged.emit).toHaveBeenCalled();
+      expect(component.itemRemoved.emit).toHaveBeenCalled();
       let input = document.getElementById("single-chipped-input") as HTMLInputElement;
       expect(input.value).toEqual("");
       let chips = document.getElementsByTagName("mat-chip");
@@ -103,7 +103,7 @@ describe('ChippedAutoCompleteSingleSelectComponent', () => {
   // }));
 
   it('When entering "ice cream" and pressing save a creation event is emitted and list is updated', fakeAsync(() => {
-    spyOn(component.listChanged, 'emit');
+    spyOn(component.itemSaved, 'emit');
     sendInput("ice cream").then(() => {
       expect(component.list).toEqual([]);
       expect(component.selectedItem).toBeNull();
@@ -111,7 +111,7 @@ describe('ChippedAutoCompleteSingleSelectComponent', () => {
       clickButton(document.getElementById("single-chipped-input-save-button") as HTMLButtonElement);
 
       expect(component.list).toEqual(["ice cream"]);
-      expect(component.listChanged.emit).toHaveBeenCalled()
+      expect(component.itemSaved.emit).toHaveBeenCalled()
       let input = document.getElementById("single-chipped-input") as HTMLInputElement;
       expect(input.value).toEqual("");
       let chips = document.getElementsByTagName("mat-chip");
