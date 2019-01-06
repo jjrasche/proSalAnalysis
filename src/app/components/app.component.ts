@@ -206,7 +206,10 @@ export class AppComponent implements OnInit {
     
     // if removed the selected form, then maintain the formGroup values.
     if (formName != null) {
-      this.formGroup = this.savedFormService.getSelectedFormFromLocalStorage();
+      let formValue = this.savedFormService.getSelectedFormFromLocalStorage();
+      if (formValue) {
+        this.formGroup = formValue;
+      }
       this.drawChart();
     }
   }

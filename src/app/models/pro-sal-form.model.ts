@@ -20,8 +20,8 @@ export const DefaultProSalForm: ProSalForm = {
     staticCosts: 0, // 5700,
     payAdjustedCostPercent: 0, // 8.38,
     stopLoss: false, // false,
-    unfairLow: 0, // 21,
-    fairLow: 0, // 22,
-    fairHigh: 0, // 24,
-    unfairHigh: 0, // 25
+    unfairLow: 21,
+    fairLow: 22,
+    fairHigh: 24,
+    unfairHigh: 25
 }

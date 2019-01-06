@@ -14,11 +14,19 @@ export class SavedFormService {
   getSelectedFormFromLocalStorage(): FormGroup {
     let selectedForm = this.localStorageService.getSelectedForm();
     let forms = this.localStorageService.getFormsFromLocalStorage();
-    const formString = forms == null ? undefined : forms[selectedForm];
-    // test if formString is undefined default to default values;
-    return this.convertProSalToForm(formString);
-  }
+    const formString = forms[selectedForm];
 
+    // no form selected return default
+    if (selectedForm == null) {
+      return this.convertProSalToForm(DefaultProSalForm);
+    }
+    // form selected, but no form found. e.g. still in process of saving
+    else if (formString == null) {
+      return null;
+    } else {
+      return this.convertProSalToForm(formString);
+    }
+  }
 
   invalidRangeValidations: ValidatorFn = (fg: FormGroup): ValidationErrors | null => {
     const unfairLow = fg.get("unfairLow").value;
@@ -31,7 +39,7 @@ export class SavedFormService {
       fairLow < unfairLow ? { 'invalidRange': true } : null;
   }
 
-convertProSalToForm(proSal: ProSalForm = DefaultProSalForm): FormGroup {
+convertProSalToForm(proSal: ProSalForm): FormGroup {
   return this.fb.group({
     "basePay": proSal.basePay,
     "desiredSalary": proSal.desiredSalary,

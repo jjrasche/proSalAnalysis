@@ -95,8 +95,8 @@ export class ChippedAutoCompleteSingleSelectComponent implements OnInit {
       this.selectItem(inputValue);
     }
     this.list.push(this.selectedItem);
-    this.itemSaved.emit(this.selectedItem);
     this.selectedItemChange.emit(this.selectedItem);
+    this.itemSaved.emit(this.selectedItem);
   }
 
   delete(): void {
