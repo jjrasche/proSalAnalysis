@@ -14,14 +14,14 @@ export class ProSalForm {
 }
 
 export const DefaultProSalForm: ProSalForm = {
-    basePay: 0, // 78000,
-    desiredSalary: 0, // 85000,
-    percentProduction: 0, // 18.5,
-    staticCosts: 0, // 5700,
-    payAdjustedCostPercent: 0, // 8.38,
-    stopLoss: false, // false,
+    basePay: 78000,
+    desiredSalary: 85000,
+    percentProduction: 18.5,
+    staticCosts: 5700,
+    payAdjustedCostPercent: 8.38,
+    stopLoss: false,
     unfairLow: 21,
     fairLow: 22,
     fairHigh: 24,
     unfairHigh: 25
-}
+};

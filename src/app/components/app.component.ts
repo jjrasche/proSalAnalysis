@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, ValidatorFn, ValidationErrors } from '@angular/forms';
-import { ProSalData } from "../models/pro-sal-data.model"
-import { Domain } from "../models/domain.model"
+import { ProSalData } from '../models/pro-sal-data.model'
+import { Domain } from '../models/domain.model'
 import { ChartService } from '../services/chart.service';
 import { LocalStorageService } from '../services/local-storage.service';
 import { ProSalForm, DefaultProSalForm } from '../models/pro-sal-form.model';
@@ -16,20 +16,20 @@ declare let google: any;
 export class AppComponent implements OnInit {
   lineChartData: Object;
   formGroup: FormGroup;
-  updatingChart: boolean = false;
+  updatingChart = false;
   private stepSize = 500;
   private calculatedDomain: Domain = { min: 0, max: 1500000 };
-  private xAxis: Domain = {min:120000, max:720000};
+  private xAxis: Domain = {min: 120000, max: 720000};
   lossPoint: number;
   gainPoint: number;
   debouncedInput: KeyboardEvent;
   formList: Array<string>;
   initialSelectedForm: string;
-  
-  public get costToProductionLossPercent() : number {
-    return this.formGroup.get("unfairHigh").value / 100;
+
+  public get costToProductionLossPercent(): number {
+    return this.formGroup.get('unfairHigh').value / 100;
   }
-  
+
   constructor(public fb: FormBuilder,
               public chartService: ChartService,
               private localStorageService: LocalStorageService,
@@ -39,21 +39,21 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.formGroup = this.savedFormService.getSelectedFormFromLocalStorage();
     this.initialSelectedForm = this.localStorageService.getSelectedForm();
-    let forms = this.localStorageService.getFormsFromLocalStorage();
+    const forms = this.localStorageService.getFormsFromLocalStorage();
     this.formList = Object.keys(forms);
 
     console.log(`initial
     selected from: ${this.initialSelectedForm}
     form list: ${JSON.stringify(this.formList)}
-    `)
+    `);
 
-    this.formGroup.get("stopLoss").valueChanges.pipe()
+    this.formGroup.get('stopLoss').valueChanges.pipe()
       .subscribe((stopLoss: boolean) => {
         this.drawChart();
         if (stopLoss) {
-          this.formGroup.get("basePay").disable();
+          this.formGroup.get('basePay').disable();
         } else {
-          this.formGroup.get("basePay").enable();
+          this.formGroup.get('basePay').enable();
         }
       });
 
@@ -62,7 +62,7 @@ export class AppComponent implements OnInit {
   }
 
   drawChart() {
-    if(this.formGroup.errors) {
+    if (this.formGroup.errors) {
       return;
     }
     if (this.updatingChart) {
@@ -72,7 +72,7 @@ export class AppComponent implements OnInit {
     this.localStorageService.safeAddFormToLocalStorage(this.formGroup.value);
 
     this.updatingChart = true;
-    var dataTable = new google.visualization.DataTable();
+    let dataTable = new google.visualization.DataTable();
     dataTable.addColumn('number', 'Production');
     dataTable.addColumn('number', 'Cost/Production');
     // A column for custom tooltip content
@@ -81,10 +81,10 @@ export class AppComponent implements OnInit {
 
     dataTable.addRows(this.googleCreateProductionData());
 
-    var options = {
+    let options = {
       tooltip: { isHtml: true },
       legend: 'none',
-      chartArea: { 'left': 20, 'bottom': 20, "right": 5, "top": 5 },
+      chartArea: { 'left': 20, 'bottom': 20, 'right': 5, 'top': 5 },
       explorer: {
         actions: ['dragToZoom', 'rightClickToReset'],
         axis: 'horizontal',
@@ -92,13 +92,13 @@ export class AppComponent implements OnInit {
         maxZoomIn: 4.0
       },
     };
-    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    let chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
     chart.draw(dataTable, options);
     this.updatingChart = false;
   }
 
   googleCreateProductionData(): Array<Array<any>> {
-    let proSalData = new Array<ProSalData>();
+    const proSalData = new Array<ProSalData>();
     let xVal = this.calculatedDomain.min;
     while (xVal <= this.calculatedDomain.max) {
       proSalData.push(this.proSalFunction(xVal));
@@ -106,12 +106,12 @@ export class AppComponent implements OnInit {
     }
 
     // set gain and loss points
-    let lossDataPoint = this.chartService.closest(proSalData, "costToProduction", 25);
+    const lossDataPoint = this.chartService.closest(proSalData, 'costToProduction', 25);
     this.lossPoint = lossDataPoint == null ? null : lossDataPoint.production;
-    let gainDataPoint = this.chartService.closest(proSalData, "totalPay", this.formGroup.get("desiredSalary").value);
+    const gainDataPoint = this.chartService.closest(proSalData, 'totalPay', this.formGroup.get('desiredSalary').value);
     this.gainPoint = gainDataPoint == null ? null : gainDataPoint.production;
 
-    let ret = new Array<Array<any>>();
+    const ret = new Array<Array<any>>();
     proSalData
       .filter((psd: ProSalData) => this.xAxis.min < psd.production && psd.production < this.xAxis.max)
       .forEach((psd: ProSalData) => {
@@ -122,27 +122,27 @@ export class AppComponent implements OnInit {
   }
 
   proSalFunction(production: number): ProSalData {
-    let basePay = this.formGroup.get("basePay").value;
-    let percentProduction = this.chartService.toPercent(this.formGroup.get("percentProduction").value);
-    let staticCosts = this.formGroup.get("staticCosts").value;
-    let payAdjustedCostPercent = this.chartService.toPercent(this.formGroup.get("payAdjustedCostPercent").value);
+    const basePay = this.formGroup.get('basePay').value;
+    const percentProduction = this.chartService.toPercent(this.formGroup.get('percentProduction').value);
+    const staticCosts = this.formGroup.get('staticCosts').value;
+    const payAdjustedCostPercent = this.chartService.toPercent(this.formGroup.get('payAdjustedCostPercent').value);
 
-    let productionPay = production * percentProduction;
-    let additionalProductionPay =
+    const productionPay = production * percentProduction;
+    const additionalProductionPay =
       productionPay - basePay > 0 ?
         productionPay - basePay : 0;
 
-    let totalPay: number = 0
-    let totalCost: number = 0;
-    let costToProduction: number = 0;
-    if (this.formGroup.get("stopLoss").value) {
+    let totalPay = 0;
+    let totalCost = 0;
+    let costToProduction = 0;
+    if (this.formGroup.get('stopLoss').value) {
       totalPay = basePay + additionalProductionPay;
       totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
       costToProduction = totalCost / production;
 
       // determine totalPay based on costToProductionLossPercent
       if (costToProduction > this.costToProductionLossPercent) {
-        totalPay = (this.costToProductionLossPercent * production - staticCosts)/(payAdjustedCostPercent + 1);
+        totalPay = (this.costToProductionLossPercent * production - staticCosts) / (payAdjustedCostPercent + 1);
         totalCost = staticCosts + payAdjustedCostPercent * totalPay + totalPay;
         costToProduction = totalCost / production;
       }
@@ -161,18 +161,18 @@ export class AppComponent implements OnInit {
   }
 
   psdToColor(proSalData: ProSalData) {
-    let opacity = proSalData.totalPay <= this.formGroup.get("desiredSalary").value ? .2 : 1;
+    const opacity = proSalData.totalPay <= this.formGroup.get('desiredSalary').value ? .2 : 1;
 
-    if (proSalData.costToProduction > this.formGroup.get("unfairHigh").value) {
-      return `color: red; opacity: ${opacity};`
-    } else if (proSalData.costToProduction > this.formGroup.get("fairHigh").value) {
-      return `color: yellow; opacity: ${opacity};`
-    } else if (proSalData.costToProduction > this.formGroup.get("fairLow").value) {
-      return `color: green; opacity: ${opacity};`
-    } else if (proSalData.costToProduction > this.formGroup.get("unfairLow").value) {
-      return `color: yellow; opacity: ${opacity};`
+    if (proSalData.costToProduction > this.formGroup.get('unfairHigh').value) {
+      return `color: red; opacity: ${opacity};`;
+    } else if (proSalData.costToProduction > this.formGroup.get('fairHigh').value) {
+      return `color: yellow; opacity: ${opacity};`;
+    } else if (proSalData.costToProduction > this.formGroup.get('fairLow').value) {
+      return `color: green; opacity: ${opacity};`;
+    } else if (proSalData.costToProduction > this.formGroup.get('unfairLow').value) {
+      return `color: yellow; opacity: ${opacity};`;
     }
-    return `color: red; opacity: ${opacity};`
+    return `color: red; opacity: ${opacity};`;
   }
 
 
@@ -184,7 +184,7 @@ export class AppComponent implements OnInit {
       }
       this.debouncedInput = event;
       this.drawChart();
-      return false
+      return false;
     }
   }
 
@@ -203,10 +203,10 @@ export class AppComponent implements OnInit {
    */
   itemSelected(formName: string) {
     this.localStorageService.setSelectedForm(formName);
-    
+
     // if removed the selected form, then maintain the formGroup values.
     if (formName != null) {
-      let formValue = this.savedFormService.getSelectedFormFromLocalStorage();
+      const formValue = this.savedFormService.getSelectedFormFromLocalStorage();
       if (formValue) {
         this.formGroup = formValue;
       }

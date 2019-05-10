@@ -59,7 +59,9 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "proSalAnalysis:build"
+            "browserTarget": "proSalAnalysis:build",
+            "baseHref": "/",
+            "deployUrl": "/"
           },
           "configurations": {
             "production": {
